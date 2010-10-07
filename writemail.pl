@@ -62,9 +62,12 @@ print "Server: $xml->{host}\nUser: $xml->{user}\nPass: you know\nCluster:$xml->{
 
 if($file eq '')
 {
-    print "Inserting Email without CSV...";
+    print "Inserting Email without CSV\n";
+    print "    Inserting header...";
     my $query="insert into Email_OUT set `From`=\'$from\', `Subject`=\'$subject\', `To`=\'$to\', `Mount`=\'Y\', `ClusterId`=\'$xml->{cluster}\', `Body`=\'$body\', `Clase`=\'$class\'";
     my $do=$db->prepare("$query")->execute;
+    print "Ok\n";
+    print "     Inserting attachment (if any)...";
     if ($attachment ne ''){
       print "Inserting Email Attachment...";
       $query="insert into Email_ATTACHMENTS set `Path`=\'$attachment\',`Header`=LAST_INSERT_ID()";
