@@ -67,7 +67,7 @@ sub loop{
           $self->send(-email=>$record,-verbose=>$verbose);
      }
      sleep $self->{frequency};
-     print "Waiting for emails on ComWay\n" if $verbose;
+     print "Waiting for emails on MPG\n" if $verbose;
    } 
 }
 
