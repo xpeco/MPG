@@ -4,6 +4,7 @@ use warnings;
 
 use Getopt::Std;
 use DBI;
+use XML::Simple;
 
 sub help
 {
@@ -16,6 +17,8 @@ sub help
   print "\t\tin table 'Config'.\n";
   print " -s\t\t'Subject' of the e-mail.\n";
   print " -t\t\t'To': Destination e-mail address. Supports multiple comma-separated destinations.\n";
+  print " -a\t\t'Attachment': ....\n";
+
   print "\n";
   exit;
 }
@@ -24,7 +27,7 @@ if ($#ARGV<0){help;exit;} # if no args, just show the Help and exit
 
 my %options=();
 
-getopts("hf:t:s:b:d:c:",\%options);
+getopts("hf:t:s:b:d:c:a:",\%options);
 
 help if defined $options{h};
 
@@ -35,6 +38,7 @@ my $to='';
 my $body='';
 my $file='';
 my $class='';
+my $attachment='';
 
 
 $from=$options{f} if defined $options{f};
@@ -43,13 +47,14 @@ $to=$options{t} if defined $options{t};
 $body=$options{b} if defined $options{b};
 $file=$options{d} if defined $options{d};
 $class=$options{c} if defined $options{c};
+$attachment=$options{a} if defined $options{a};
 
 
 # Create DB connection
 my $xml=XMLin('./config.xml');
 print "Server: $xml->{host}\nUser: $xml->{user}\nPass: you know\nCluster:$xml->{cluster}";
 
-    my $db=DBI->connect("DBI:mysql:$xml->{database}:$xml->{host}",$xml->{user},$xml->{pass});
+    my $db=DBI->connect("DBI:mysql:$xml->{database}:$xml->{host}",$xml->{user},$xml->{password});
     if (not $db){
          print STDERR "Connection to DB failed :-(\n";
          exit(0);
@@ -57,12 +62,17 @@ print "Server: $xml->{host}\nUser: $xml->{user}\nPass: you know\nCluster:$xml->{
 
 if($file eq '')
 {
-    print "Inserting Email without attachments...";
+    print "Inserting Email without CSV...";
+    print "   Inserting
     my $query="insert into Email_OUT set `From`=\'$from\', `Subject`=\'$subject\', `To`=\'$to\', `Mount`=\'Y\', `ClusterId`=\'$xml->{cluster}\', `Body`=\'$body\', `Clase`=\'$class\'";
     my $do=$db->prepare("$query")->execute;
+    if ($attachment ne ''){
+      print "Inserting Email Attachment...";
+      $query="insert into Email_ATTACHMENTS set `Path`=\'$attachment\',`Header`=LAST_INSERT_ID()";
+      $do=$db->prepare($query)->execute;
+    }
     print "OK\n";
 }
-
 else
 {
 # Open file
