@@ -60,7 +60,7 @@ sub loop{
    $verbose=$properties{'-verbose'} if defined $properties{'-verbose'};
    print "Waiting for emails on MPG\n" if $verbose;
    while(1){
-     my $do=$self->{db}->prepare("select * from `Email_OUT` where Sent='N' and Retry<'10' and Mount='Y' and ClusterId=\'$self->{xml}->{cluster}\'");
+     my $do=$self->{db}->prepare("select * from `Email_OUT` where Sent<>'Y' and Retry<'10' and Mount='Y' and ClusterId=\'$self->{xml}->{cluster}\'");
      $do->execute;
      while(my $record=$do->fetchrow_hashref()){
           print "Pending email found ($record->{Id})\n" if $verbose;
