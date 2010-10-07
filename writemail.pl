@@ -63,7 +63,6 @@ print "Server: $xml->{host}\nUser: $xml->{user}\nPass: you know\nCluster:$xml->{
 if($file eq '')
 {
     print "Inserting Email without CSV...";
-    print "   Inserting
     my $query="insert into Email_OUT set `From`=\'$from\', `Subject`=\'$subject\', `To`=\'$to\', `Mount`=\'Y\', `ClusterId`=\'$xml->{cluster}\', `Body`=\'$body\', `Clase`=\'$class\'";
     my $do=$db->prepare("$query")->execute;
     if ($attachment ne ''){
