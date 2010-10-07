@@ -25,9 +25,9 @@ sub _init{
        my $self=shift;
 
        $self->{xml}=XMLin('./config.xml');
-print "Server: $self->{xml}->{host}\nUser: $self->{xml}->{user}\nPass: you know\nCluster:$self->{xml}->{cluster}";
+print "Server: $self->{xml}->{host}\nUser: $self->{xml}->{user}\nPass: you know \nDatabase: $self->{xml}->{database}\nCluster: $self->{xml}->{cluster}\n";
 
-       $self->{db}=DBI->connect("DBI:mysql:$self->{database}:$self->{xml}->{host}",$self->{user},$self->{pass});
+       $self->{db}=DBI->connect("DBI:mysql:$self->{xml}->{database}:$self->{xml}->{host}",$self->{xml}->{user},$self->{xml}->{password});
        if (not $self->{db}){
          print STDERR "Connection to DB failed :-(\n";
          exit(0);
@@ -101,11 +101,11 @@ sub send
      
    if (@list!=0) # with attachments
    {
-       ref($self->{sender}->MailFile({to=>$mail->{To},replyto=>$mail->{Reply-To},cc=>$mail->{Cc},bcc=>$mail->{Bcc},subject=>$mail->{Subject},msg=>$mail->{Body},b_charset=>'utf-8',priority=>$mail->{Priority},file=>\@list})) or print "Error: $Mail::Sender::Error";
+       ref($self->{sender}->MailFile({to=>$mail->{To},replyto=>$mail->{ReplyTo},cc=>$mail->{Cc},bcc=>$mail->{Bcc},subject=>$mail->{Subject},msg=>$mail->{Body},b_charset=>'utf-8',priority=>$mail->{Priority},file=>\@list})) or print "Error: $Mail::Sender::Error";
    }
    else
    {
-       ref($self->{sender}->MailMsg({to=>$mail->{To},replyto=>$mail->{Reply-To},cc=>$mail->{Cc},bcc=>$mail->{Bcc},subject=>$mail->{Subject},msg=>$mail->{Body},b_charset=>'utf-8',priority=>$mail->{Priority}})) or  print "Error: $Mail::Sender::Error";
+       ref($self->{sender}->MailMsg({to=>$mail->{To},replyto=>$mail->{ReplyTo},cc=>$mail->{Cc},bcc=>$mail->{Bcc},subject=>$mail->{Subject},msg=>$mail->{Body},b_charset=>'utf-8',priority=>$mail->{Priority}})) or  print "Error: $Mail::Sender::Error";
    }
 
    if($Mail::Sender::Error)
