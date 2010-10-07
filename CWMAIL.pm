@@ -8,6 +8,7 @@ $VERSION='0.1';
 
 use DBI;
 use Mail::Sender;
+use XML::Simple;
 
 #use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
 #use Mail::CheckUser qw(check_email last_check);
@@ -23,12 +24,10 @@ sub new{
 sub _init{
        my $self=shift;
 
-my $server='sunrise';
-my $user='peco';
-my $password='xxx';
-$self->{cluster}='tlon';
+       $self->{xml}=XMLin('./config.xml');
+print "Server: $self->{xml}->{host}\nUser: $self->{xml}->{user}\nPass: you know\nCluster:$self->{xml}->{cluster}";
 
-       $self->{db}=DBI->connect("DBI:mysql:comway:$server",$user,$password);
+       $self->{db}=DBI->connect("DBI:mysql:$self->{database}:$self->{xml}->{host}",$self->{user},$self->{pass});
        if (not $self->{db}){
          print STDERR "Connection to DB failed :-(\n";
          exit(0);
@@ -59,9 +58,9 @@ sub loop{
 
    my $verbose=0;
    $verbose=$properties{'-verbose'} if defined $properties{'-verbose'};
-   print "Waiting for emails on ComWay\n" if $verbose;
+   print "Waiting for emails on MPG\n" if $verbose;
    while(1){
-     my $do=$self->{db}->prepare("select * from `Email_OUT` where Sent='N' and Retry<'10' and Mount='Y' and ClusterId=\'$self->{cluster}\'");
+     my $do=$self->{db}->prepare("select * from `Email_OUT` where Sent='N' and Retry<'10' and Mount='Y' and ClusterId=\'$self->{xml}->{cluster}\'");
      $do->execute;
      while(my $record=$do->fetchrow_hashref()){
           print "Pending email found ($record->{Id})\n" if $verbose;
@@ -102,11 +101,11 @@ sub send
      
    if (@list!=0) # with attachments
    {
-       ref($self->{sender}->MailFile({to=>$mail->{To},cc=>$mail->{Cc},bcc=>$mail->{Bcc},subject=>$mail->{Subject},msg=>$mail->{Body},b_charset=>'utf-8',priority=>$mail->{Priority},file=>\@list})) or print "Error: $Mail::Sender::Error";
+       ref($self->{sender}->MailFile({to=>$mail->{To},replyto=>$mail->{Reply-To},cc=>$mail->{Cc},bcc=>$mail->{Bcc},subject=>$mail->{Subject},msg=>$mail->{Body},b_charset=>'utf-8',priority=>$mail->{Priority},file=>\@list})) or print "Error: $Mail::Sender::Error";
    }
    else
    {
-       ref($self->{sender}->MailMsg({to=>$mail->{To},cc=>$mail->{Cc},bcc=>$mail->{Bcc},subject=>$mail->{Subject},msg=>$mail->{Body},b_charset=>'utf-8',priority=>$mail->{Priority}})) or  print "Error: $Mail::Sender::Error";
+       ref($self->{sender}->MailMsg({to=>$mail->{To},replyto=>$mail->{Reply-To},cc=>$mail->{Cc},bcc=>$mail->{Bcc},subject=>$mail->{Subject},msg=>$mail->{Body},b_charset=>'utf-8',priority=>$mail->{Priority}})) or  print "Error: $Mail::Sender::Error";
    }
 
    if($Mail::Sender::Error)
