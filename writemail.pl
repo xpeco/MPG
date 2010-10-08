@@ -11,6 +11,7 @@ sub help
   print "\nVersion: XX\n";
   print "\nUsage:\n";
   print " -b\t\t'Body': The main text of the e-mail.\n";
+  print " -r\t\t'ReplyTo': .........\n";
   print " -c\t\t'Class' of the e-mail (optional).\n";
   print " -d [filename]\tReads addresses and attachments from a plain text file. See sample.csv.\n";
   print " -f\t\t'From': e-mail address from which the e-mail will be sent. Must be correctly configured\n";
@@ -27,7 +28,7 @@ if ($#ARGV<0){help;exit;} # if no args, just show the Help and exit
 
 my %options=();
 
-getopts("hf:t:s:b:d:c:a:",\%options);
+getopts("hf:t:r:s:b:d:c:a:",\%options);
 
 help if defined $options{h};
 
@@ -35,6 +36,7 @@ help if defined $options{h};
 my $subject='';
 my $from='';
 my $to='';
+my $reply='';
 my $body='';
 my $file='';
 my $class='';
@@ -44,6 +46,7 @@ my $attachment='';
 $from=$options{f} if defined $options{f};
 $subject=$options{s} if defined $options{s};
 $to=$options{t} if defined $options{t};
+$reply=$options{r} if defined $options{r};
 $body=$options{b} if defined $options{b};
 $file=$options{d} if defined $options{d};
 $class=$options{c} if defined $options{c};
@@ -64,7 +67,7 @@ if($file eq '')
 {
     print "Inserting Email without CSV\n";
     print "    Inserting header...";
-    my $query="insert into Email_OUT set `From`=\'$from\', `Subject`=\'$subject\', `To`=\'$to\', `Mount`=\'Y\', `ClusterId`=\'$xml->{cluster}\', `Body`=\'$body\', `Clase`=\'$class\'";
+    my $query="insert into Email_OUT set `From`=\'$from\', `ReplyTo`=\'$reply\', `Subject`=\'$subject\', `To`=\'$to\', `Mount`=\'Y\', `ClusterId`=\'$xml->{cluster}\', `Body`=\'$body\', `Clase`=\'$class\'";
     my $do=$db->prepare("$query")->execute;
     print "Ok\n";
     print "     Inserting attachment (if any)...";
@@ -86,7 +89,7 @@ else
   {
      print "Inserting Email header...";
      my @fields=split(/;/,$line);
-     my $query="insert into Email_OUT set `From`=\'$from\',`Subject`=\'$subject\',`To`=\'$fields[0]\',`Mount`=\'Y\',`ClusterId`=\'$xml->{cluster}\',`Body`=\'$body\',`Clase`=\'$class\'";
+     my $query="insert into Email_OUT set `From`=\'$from\',`Subject`=\'$subject\',`To`=\'$fields[0]\', `ReplyTo`=\'$reply\', `Mount`=\'Y\',`ClusterId`=\'$xml->{cluster}\',`Body`=\'$body\',`Clase`=\'$class\'";
      my $do=$db->prepare($query)->execute;
      print "OK\n";
      print "Inserting Email Attachment...";
