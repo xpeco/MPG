@@ -11,14 +11,14 @@ sub help
   print "\nVersion: XX\n";
   print "\nUsage:\n";
   print " -b\t\t'Body': The main text of the e-mail.\n";
-  print " -r\t\t'ReplyTo': .........\n";
+  print " -r\t\t'ReplyTo' field of the e-mail\n";
   print " -c\t\t'Class' of the e-mail (optional).\n";
   print " -d [filename]\tReads addresses and attachments from a plain text file. See sample.csv.\n";
   print " -f\t\t'From': e-mail address from which the e-mail will be sent. Must be correctly configured\n";
   print "\t\tin table 'Config'.\n";
   print " -s\t\t'Subject' of the e-mail.\n";
   print " -t\t\t'To': Destination e-mail address. Supports multiple comma-separated destinations.\n";
-  print " -a\t\t'Attachment': ....\n";
+  print " -a\t\t'Attachment': Single file to be attached or multiple comma-sepatated files.\n";
 
   print "\n";
   exit;
@@ -67,7 +67,7 @@ if($file eq '')
 {
     print "Inserting Email without CSV\n";
     print "    Inserting header...";
-    my $query="insert into Email_OUT set `From`=\'$from\', `ReplyTo`=\'$reply\', `Subject`=\'$subject\', `To`=\'$to\', `Mount`=\'Y\', `ClusterId`=\'$xml->{cluster}\', `Body`=\'$body\', `Clase`=\'$class\'";
+    my $query="insert into Email_OUT set `From`=\'$from\', `ReplyTo`=\'$reply\', `Subject`=\'$subject\', `To`=\'$to\', `Mount`=\'Y\', `ClusterId`=\'$xml->{cluster}\', `Body`=\'$body\', `Class`=\'$class\'";
     my $do=$db->prepare("$query")->execute;
     print "Ok\n";
     print "     Inserting attachment (if any)...";
