@@ -33,11 +33,11 @@ getopts("hf:t:r:s:b:d:c:a:",\%options);
 help if defined $options{h};
 
 # Default values
-my $subject='';
+my $subject=' ';
 my $from='';
 my $to='';
 my $reply='';
-my $body='';
+my $body=' ';
 my $file='';
 my $class='';
 my $attachment='';
