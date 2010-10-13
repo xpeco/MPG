@@ -1,4 +1,4 @@
-package CWMAIL;
+package MGPMAIL;
 
 use strict;
 use warnings;
@@ -7,7 +7,7 @@ use vars qw($VERSION);
 $VERSION='0.1';
 
 use DBI;
-use Mail::Sender;
+use Mail::SendEasy;
 use XML::Simple;
 
 #use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
@@ -43,7 +43,8 @@ print "Server: $self->{xml}->{host}\nUser: $self->{xml}->{user}\nPass: you know 
        $self->{authpass}=$records->[0]->{EAUTHPASS};
        $self->{frequency}=$records->[0]->{Frequency};
 
-       $self->{sender}=new Mail::Sender{smtp=>$self->{smtp},from=>$self->{from},fake_from=>$self->{ffrom},auth=>$self->{auth},authid=>$self->{authid},authpwd=>$self->{authpass},on_errors=>'undef'};# or print "Error: $sender->{'error_msg'}";
+       $self->{sender}=new Mail::SendEasy(smtp=>$self->{smtp},user=>$self->{authid},pass=>$self->{authpass});
+
       if (not defined $self->{sender}){print "Error, can not be possible to connect to the SMTP using the Config data\n";exit 1;}
 }
 
@@ -89,8 +90,6 @@ sub send
      print "Error at 'send', the -email parameter is mandatory!\n";
      exit;
    }
-#   my $sender=new Mail::Sender{smtp=>$self->{smtp},from=>$self->{from},auth=>$self->{auth},authid=>$self->{authid},authpwd=>$self->{authpass},on_errors=>'undef'};# or print "Error: $sender->{'error_msg'}";
-#   if (not defined $sender){print "Error, can not be possible to connect to the SMTP using the Config data\n";exit 1;}
 
    my $do=$self->{db}->prepare("select * from `Email_ATTACHMENTS` where Header=\'$mail->{Id}\'");
    $do->execute;
@@ -100,20 +99,22 @@ sub send
        push(@list,$attach->{Path});
    }
      
+   my $status;
    if (@list!=0) # with attachments
    {
-       ref($self->{sender}->MailFile({to=>$mail->{To},replyto=>$mail->{ReplyTo},cc=>$mail->{Cc},bcc=>$mail->{Bcc},subject=>$mail->{Subject},msg=>$mail->{Body},b_charset=>'utf-8',priority=>$mail->{Priority},file=>\@list})) or print "Error: $Mail::Sender::Error";
+       $status = $mail->send(from=>$mail->{From},from_title=>$mail->{ffrom},reply=>$mail->{ReplyTo},to=>$mail->{To},cc=>$mail->{Cc},bcc=>$mail->{Bcc},subject=>$mail->{Subject} ,msg=>$mail->{Body},anex=>@list);
    }
    else
    {
-       ref($self->{sender}->MailMsg({to=>$mail->{To},replyto=>$mail->{ReplyTo},cc=>$mail->{Cc},bcc=>$mail->{Bcc},subject=>$mail->{Subject},msg=>$mail->{Body},b_charset=>'utf-8',priority=>$mail->{Priority}})) or  print "Error: $Mail::Sender::Error";
+       $status = $mail->send(from=>$mail->{From},from_title=>$mail->{ffrom},reply=>$mail->{ReplyTo},to=>$mail->{To},cc=>$mail->{Cc},bcc=>$mail->{Bcc},subject=>$mail->{Subject} ,msg=>$mail->{Body});
+
    }
 
-   if($Mail::Sender::Error)
+   if(!$status)
    {
        print "Error, updating the email record\n" if $verbose; 
        my $retry=$mail->{Retry}++;
-       $do=$self->{db}->prepare("update `Email_OUT` set Retry=\'$retry\', Status=\'$Mail::Sender::Error\', Time=CURTIME(), Date=CURDATE() where Id=\'$mail->{Id}\'");
+       $do=$self->{db}->prepare("update `Email_OUT` set Retry=\'$retry\', Status=\'$mail->error\', Time=CURTIME(), Date=CURDATE() where Id=\'$mail->{Id}\'");
        $do->execute;
     }
     else
