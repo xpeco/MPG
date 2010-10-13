@@ -2,9 +2,17 @@ MPG - Multiple Protocol Gateway
 
 DESCRIPTION
 
+    MPG is a system that provides a simple and unified way to use different communication protocols,
+    such as e-mail, ftp, twitter, SMS, etc.
+    It's intended to be modular, so adding new protocols should be fairly easy.
+    
 FEATURES
+    
+    Currently only supports e-mail.
 
 TODO
+
+    Modules for other protocols (ftp, twitter, SMS)
 
 KNOWN BUGS
 
