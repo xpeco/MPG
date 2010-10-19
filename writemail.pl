@@ -10,21 +10,20 @@ sub help
 {
   print "\nVersion: XX\n";
   print "\nUsage:\n";
+  print " -a\t\t'Attachment': Single file to be attached or multiple comma-sepatated files.\n";
   print " -b\t\t'Body': The main text of the e-mail.\n";
-  print " -r\t\t'ReplyTo' field of the e-mail\n";
   print " -c\t\t'Class' of the e-mail (optional).\n";
   print " -d [filename]\tReads addresses and attachments from a plain text file. See sample.csv.\n";
   print " -f\t\t'From': e-mail address from which the e-mail will be sent. Must be correctly configured\n";
   print "\t\tin table 'Config'.\n";
+  print " -r\t\t'ReplyTo' field of the e-mail\n";
   print " -s\t\t'Subject' of the e-mail.\n";
   print " -t\t\t'To': Destination e-mail address. Supports multiple comma-separated destinations.\n";
-  print " -a\t\t'Attachment': Single file to be attached or multiple comma-sepatated files.\n";
-
   print "\n";
   exit;
 }
 
-if ($#ARGV<0){help;exit;} # if no args, just show the Help and exit
+if ($#ARGV<0){help;exit;} # if no args, just show the usage help and exit
 
 my %options=();
 
@@ -63,24 +62,24 @@ print "Server: $xml->{host}\nUser: $xml->{user}\nPass: you know\nCluster:$xml->{
          exit(0);
     }
 
-if($file eq '')
+if($file eq '') # No CSV specified
 {
-    print "Inserting Email without CSV\n";
+    print "Inserting Email\n";
     print "    Inserting header...";
     my $query="insert into Email_OUT set `From`=\'$from\', `ReplyTo`=\'$reply\', `Subject`=\'$subject\', `To`=\'$to\', `Mount`=\'Y\', `ClusterId`=\'$xml->{cluster}\', `Body`=\'$body\', `Class`=\'$class\'";
     my $do=$db->prepare("$query")->execute;
-    print "Ok\n";
-    print "     Inserting attachment (if any)...";
+    print "OK\n";
+    print "     Inserting attachment(s) (if any)...";
     if ($attachment ne ''){
-      print "Inserting Email Attachment...";
+      print "Inserting Email Attachment(s)...";
       $query="insert into Email_ATTACHMENTS set `Path`=\'$attachment\',`Header`=LAST_INSERT_ID()";
       $do=$db->prepare($query)->execute;
     }
     print "OK\n";
 }
-else
+else 
 {
-# Open file
+  # CSV file specified
   print "Reading DB file (separator = ;)\n";
   open(IN,"+<$file")
   or die "ERROR";
@@ -92,7 +91,7 @@ else
      my $query="insert into Email_OUT set `From`=\'$from\',`Subject`=\'$subject\',`To`=\'$fields[0]\', `ReplyTo`=\'$reply\', `Mount`=\'Y\',`ClusterId`=\'$xml->{cluster}\',`Body`=\'$body\',`Clase`=\'$class\'";
      my $do=$db->prepare($query)->execute;
      print "OK\n";
-     print "Inserting Email Attachment...";
+     print "Inserting Email Attachment(s)...";
      $query="insert into Email_ATTACHMENTS set `Path`=\'$fields[1]\',`Header`=LAST_INSERT_ID()";
      $do=$db->prepare($query)->execute;
      print "OK\n";
