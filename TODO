@@ -1,14 +1,16 @@
-- Fix: The daemon must be restarted after a modification in the Email_OUT
-table (adding or removing rows).
 
-- Existing table entries in Email_OUT older than X without being sent
+- FIX: The daemon must be restarted after a modification in the Email_OUT
+table (adding or removing rows) or else will fail.
+
+- FIX: Retry count not working. TODO: When retry count reaches X do something
+(alert, notification, unmount...)
+
+- TODO: Existing table entries in Email_OUT older than X without being sent
 (because of an error or because not being mounted) should fire an alert 
-and/or notification to the Admin. 
+and/or notification to the Admin.
 
-- Periodically clean old entries, either by deleting them or by moving them
+- TODO: Periodically clean old entries, either by deleting them or by moving them
 to a backup table.
 
-- Fix: Retry count not working. When retry count reaches X do something
-(alert, unmount...)
-
-- Less verbose daemon should not output unmounted entries every time.
+- TODO: Less verbose daemon should not output unmounted entries every time, it can create
+a lot of output and make it harder to read significant messages.

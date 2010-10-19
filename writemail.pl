@@ -8,17 +8,19 @@ use XML::Simple;
 
 sub help
 {
-  print "\nVersion: XX\n";
+  print "\nMPG - Multi Protocol Gateway\n";
+  print "Version: XX\n";
   print "\nUsage:\n";
-  print " -a\t\t'Attachment': Single file to be attached or multiple comma-sepatated files.\n";
-  print " -b\t\t'Body': The main text of the e-mail.\n";
-  print " -c\t\t'Class' of the e-mail (optional).\n";
-  print " -d [filename]\tReads addresses and attachments from a plain text file. See sample.csv.\n";
-  print " -f\t\t'From': e-mail address from which the e-mail will be sent. Must be correctly configured\n";
-  print "\t\tin table 'Config'.\n";
-  print " -r\t\t'ReplyTo' field of the e-mail\n";
-  print " -s\t\t'Subject' of the e-mail.\n";
-  print " -t\t\t'To': Destination e-mail address. Supports multiple comma-separated destinations.\n";
+  print "\n(r)equired / (o)ptional\n\n";
+  print " -a [filename]\t(o)\t'Attachment': Single file to be attached or multiple comma-sepatated filenames\n\t\t\tenclosed between double quotes (\").\n";
+  print " -b \"Text\"\t(r)\t'Body': The main text of the e-mail. If more than one word, must be enclosed \n\t\t\tbetween double quotes (\").\n";
+  print " -c\t\t(o)\t'Class' of the e-mail. It's just 'tag' to clasify groups of e-mails.\n";
+  print " -d [filename]\t(o)\tReads addresses and attachments from a CSV file. See sample.csv.\n";
+  print " -f\t\t(r)\t'From': e-mail address from which the e-mail will be sent. Must be correctly configured\n";
+  print "\t\t\tin table 'Config'.\n";
+  print " -r\t\t(o)\t'ReplyTo' (optional): Reply-to address.\n";
+  print " -s\t\t(r)\t'Subject': Subject of the e-mail.\n";
+  print " -t\t\t(r)\t'To': Destination e-mail address. Supports multiple comma-separated destinations.\n";
   print "\n";
   exit;
 }
