@@ -12,7 +12,7 @@ USAGE
     
 FEATURES
     
-    - Clustered: Different clients use the same daemon simultaneously without interefering each other.
+    - Clustered: Different clients use the same daemon simultaneously without interefering with each other.
     - Currently only supports e-mail.
 
 TODO
