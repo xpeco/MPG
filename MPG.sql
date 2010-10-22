@@ -1,6 +1,6 @@
--- MySQL dump 10.13  Distrib 5.1.41, for debian-linux-gnu (i486)
+-- MySQL dump 10.13  Distrib 5.1.49, for debian-linux-gnu (x86_64)
 --
--- Host: sunrise    Database: comway
+-- Host: 192.168.99.195    Database: Comway
 -- ------------------------------------------------------
 -- Server version	5.1.41-3ubuntu12.6
 
@@ -32,7 +32,7 @@ CREATE TABLE `Config` (
   `Status` enum('Enabled','Disabled') NOT NULL,
   `Frequency` int(11) NOT NULL DEFAULT '3',
   PRIMARY KEY (`Id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -43,13 +43,13 @@ DROP TABLE IF EXISTS `Email_ATTACHMENTS`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `Email_ATTACHMENTS` (
-  `Id` bigint(20) NOT NULL,
+  `Id` bigint(20) NOT NULL AUTO_INCREMENT,
   `Path` varchar(250) NOT NULL,
   `Header` bigint(20) NOT NULL,
   PRIMARY KEY (`Id`),
   KEY `Header` (`Header`),
   CONSTRAINT `Header` FOREIGN KEY (`Header`) REFERENCES `Email_OUT` (`Id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=55 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -75,10 +75,12 @@ CREATE TABLE `Email_OUT` (
   `ClusterId` varchar(10) NOT NULL,
   `Time` time NOT NULL,
   `Sent` enum('Y','N') NOT NULL DEFAULT 'N',
-  `Zip` enum('Y','N') NOT NULL,
+  `Zip` enum('Y','N') NOT NULL DEFAULT 'N',
   `Created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `ReplyTo` varchar(259) NOT NULL,
+  `Class` varchar(250) NOT NULL DEFAULT 'NONE',
   PRIMARY KEY (`Id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=144 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -90,4 +92,4 @@ CREATE TABLE `Email_OUT` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2010-09-17 15:51:01
+-- Dump completed on 2010-10-19 11:10:23
