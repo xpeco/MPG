@@ -40,7 +40,7 @@ my $to='';
 my $reply='';
 my $body=' ';
 my $file='';
-my $class='';
+my $class='NONE';
 my $attachment='';
 
 
