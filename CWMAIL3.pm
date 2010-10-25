@@ -35,17 +35,17 @@ print "Server: $self->{xml}->{host}\nUser: $self->{xml}->{user}\nPass: you know 
        my $do=$self->{db}->prepare("select * from `Config` where status='Enabled'");
        $do->execute;
        my $records=$do->fetchall_arrayref({});
-       $self->{smtp}=$records->[0]->{SMTP}; #smtp.gmail.com
+       $self->{smtp}=$records->[0]->{SMTP}; # smtp.gmail.com
        $self->{from}=$records->[0]->{EFROM};
        $self->{ffrom}=$records->[0]->{FEFROM};
        $self->{auth}=$records->[0]->{EAUTH};
-       $self->{authid}=$records->[0]->{EAUTHID}; # valid email's account
-       $self->{authpass}=$records->[0]->{EAUTHPASS}; # valid email's password 
+       $self->{authid}=$records->[0]->{EAUTHID}; # valid email account
+       $self->{authpass}=$records->[0]->{EAUTHPASS}; # valid email password 
        $self->{frequency}=$records->[0]->{Frequency};
 
        $self->{sender}=new Net::SMTP::TLS($self->{smtp}, Timeout => 60, Port => 587, User => $self->{authid}, Password => $self->{authpass}, Debug => '1');
 
-      if (not defined $self->{sender}){print "Error, can not be possible to connect to the SMTP using the Config data\n";exit 1;}
+      if (not defined $self->{sender}){print "Error, can not connect to SMTP using the Config data\n";exit 1;}
 }
 
 sub close{
