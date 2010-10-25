@@ -1,4 +1,4 @@
-package MGPMAIL;
+package MGPMAIL; # <--------- MPG ?
 
 use strict;
 use warnings;
