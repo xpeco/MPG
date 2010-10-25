@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 5.1.49, for debian-linux-gnu (x86_64)
 --
--- Host: 192.168.99.195    Database: Comway
+-- Host: 192.168.99.195    Database: MPG
 -- ------------------------------------------------------
 -- Server version	5.1.41-3ubuntu12.6
 

@@ -1,3 +1,8 @@
+- FIX: Change database name to MPG.
+
+- FIX: Rename files CWMAIL to MPGMAIL.
+
+- FIX: Move Fake From field to EMAIL_OUT.
 
 - FIX: The daemon must be restarted after a modification in the Email_OUT
 table (adding or removing rows) or else will fail.
@@ -5,9 +10,9 @@ table (adding or removing rows) or else will fail.
 - TODO: When retry count reaches X, do something
 (alert, notification, unmount...)
 
-- TODO: Existing table entries in Email_OUT older than X without being sent
-(because of an error or because not being mounted) should fire an alert and/or
-notification to the Admin.
+- TODO: Existing table entries in Email_OUT older than X hours/days/whatever 
+without being sent (because of an error or because not being mounted) should
+fire an alert and/or notification to the Admin.
 
 - TODO: Periodically clean old entries, either by deleting them or by moving
 them to a backup table.
