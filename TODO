@@ -7,6 +7,8 @@
 - FIX: The daemon must be restarted after a modification in the Email_OUT
 table (adding or removing rows) or else will fail.
 
+- TODO: Multiple attachments per e-mail.
+
 - TODO: When retry count reaches X, do something
 (alert, notification, unmount...)
 
