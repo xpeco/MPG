@@ -2,9 +2,9 @@
 use strict;
 use warnings;
 
-use CWMAIL;
+use MPGMail;
 
-my $env=CWMAIL->new();
+my $env=MPGMail->new();
 
 #my @protocols = $env->{sender}->QueryAuthProtocols();
 #print "$protocols[0]\n";

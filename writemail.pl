@@ -53,6 +53,7 @@ $file=$options{d} if defined $options{d};
 $class=$options{c} if defined $options{c};
 $attachment=$options{a} if defined $options{a};
 
+if ($reply eq ''){$reply=$from;}
 
 # Create DB connection
 my $xml=XMLin('./config.xml');
