@@ -1,7 +1,5 @@
 - FIX: Change database name to MPG.
 
-- FIX: Rename files CWMAIL to MPGMAIL.
-
 - FIX: Move Fake From field to EMAIL_OUT.
 
 - FIX: The daemon must be restarted after a modification in the Email_OUT
