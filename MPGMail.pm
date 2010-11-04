@@ -51,7 +51,7 @@ sub _initsmtp{
        $self->{smtp}=$records->[0]->{SMTP}; # smtp.gmail.com
        $self->{authid}=$records->[0]->{EAUTHID}; # valid email account
        $self->{authpass}=$records->[0]->{EAUTHPASS}; # valid email password 
-       $self->{frequency}=$records->[0]->{Frequency};
+       $self->{frequency}=$records->[0]->{Frequency}; # frequency between querys
 
       if (not $self->{sender} = Net::SMTP::SSL->new($self->{smtp},
                               Port => 465,
@@ -59,7 +59,7 @@ sub _initsmtp{
       }
 
      # Authenticate
-     $self->{sender}->auth($self->{authid}, $self->{authpass})|| die "Authentication failed!\n";
+     $self->{sender}->auth($self->{authid}, $self->{authpass})|| die "Authentication (SMTP) failed!\n";
 
 }
 

@@ -4,11 +4,26 @@ DESCRIPTION
 
     MPG is a system that provides a simple and unified way to use different communication protocols,
     such as e-mail, ftp, twitter, SMS, etc.
-    It's intended to be modular, so adding new protocols should be fairly easy.  
+    It's intended to be modular, so adding new protocols should be fairly easy.
     
 USAGE
 
-
+    Database and tables
+    - Database "MPG" must have the proper structure. See MPG.sql.
+    - Table Config. Contains the configuration for the smtp accounts to be used.
+    - Table Email_OUT. Contains the details of the e-mails.
+    - Table Email_ATTACHMENTS. Contains the details of the attachments (if any)
+    
+    Daemon (1.pl)
+    The daemon scans periodically the table Email_OUT in search of rows with field Sent equal to 'N' and
+    tries to send them in groups of 10, waiting for a few seconds between each try so that the server doesn't
+    get overflowed.
+    
+    Script (writemail.pl)
+    writemail.pl is a script that makes easy to create new e-mails. Run writemail.pl with no arguments to
+    see the usage help.
+    
+    New messages can be created simply by adding a new record in the Email_OUT table.
     
 FEATURES
     

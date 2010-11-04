@@ -1,11 +1,6 @@
 - FIX: Change database name to MPG.
 
-- FIX: Rename files CWMAIL to MPGMAIL.
-
 - FIX: Move Fake From field to EMAIL_OUT.
-
-- FIX: The daemon must be restarted after a modification in the Email_OUT
-table (adding or removing rows) or else will fail.
 
 - TODO: Multiple attachments per e-mail.
 
@@ -18,6 +13,3 @@ fire an alert and/or notification to the Admin.
 
 - TODO: Periodically clean old entries, either by deleting them or by moving
 them to a backup table.
-
-- TODO: Less verbose daemon should not output unmounted entries every time, it
-can create a lot of output and make it harder to read significant messages.
