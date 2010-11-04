@@ -66,6 +66,12 @@ sub _initsmtp{
 sub closeconn{
        my $self=shift;
        $self->{db}->disconnect;
+       $self->_closesmtp;
+       return $self;
+}
+
+sub _closesmtp{
+       my $self=shift;
        $self->{sender}->quit();
        return $self;
 }
@@ -90,10 +96,10 @@ sub loop{
              sleep $self->{frequency};
         }
         print "Closing connection to SMTP server\n" if $verbose;
-        $self->closeconn;
+        $self->_closesmtp;
      }
-     print "Waiting for emails on MPG ($self->{frequency})\n" if $verbose;
-     sleep $self->{frequency};
+     print "Waiting for emails on MPG\n" if $verbose;
+     sleep 3;
    }
 }
 sub _createboundry
