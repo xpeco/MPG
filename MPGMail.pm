@@ -29,13 +29,20 @@ sub new{
 sub _initxml{
        my $self=shift;
        $self->{xml}=XMLin('./config.xml');
-print "Server: $self->{xml}->{host}\nUser: $self->{xml}->{user}\nPass: you know \nDatabase: $self->{xml}->{database}\nCluster: $self->{xml}->{cluster}\n";
+       print "Server: $self->{xml}->{host}\n
+       User: $self->{xml}->{user}\n
+       Pass: you know \n
+       Database: $self->{xml}->{database}\n
+       Cluster: $self->{xml}->{cluster}\n";
 
 }
 
 sub _initdb{
        my $self=shift;
-       $self->{db}=DBI->connect("DBI:mysql:$self->{xml}->{database}:$self->{xml}->{host}",$self->{xml}->{user},$self->{xml}->{password});
+       $self->{db}=DBI->connect("DBI:mysql:$self->{xml}->{database}:$self->{xml}->{host}",
+       $self->{xml}->{user},
+       $self->{xml}->{password});
+       
        if (not $self->{db}){
          print STDERR "Connection to DB failed :-(\n";
          exit(0);
@@ -44,7 +51,6 @@ sub _initdb{
 
 sub _initsmtp{
        my $self=shift;
-
        my $do=$self->{db}->prepare("select * from `Config` where Status='Enabled'");
        $do->execute;
        my $records=$do->fetchall_arrayref({});
@@ -53,14 +59,13 @@ sub _initsmtp{
        $self->{authpass}=$records->[0]->{EAUTHPASS}; # valid email password 
        $self->{frequency}=$records->[0]->{Frequency}; # frequency between querys
 
-      if (not $self->{sender} = Net::SMTP::SSL->new($self->{smtp},
-                              Port => 465,
-                              Debug => 0)) {die "Could not connect to server\n";
-      }
+       if (not $self->{sender} = Net::SMTP::SSL->new($self->{smtp},
+                                 Port => 465,
+                                 Debug => 0)) {die "Could not connect to server\n";
+       }
 
-     # Authenticate
-     $self->{sender}->auth($self->{authid}, $self->{authpass})|| die "Authentication (SMTP) failed!\n";
-
+       # Authenticate
+       $self->{sender}->auth($self->{authid}, $self->{authpass}) || die "Authentication (SMTP) failed!\n";
 }
 
 sub closeconn{
@@ -90,12 +95,12 @@ sub loop{
         print "Connecting to SMTP server\n" if $verbose;
         $self->_initsmtp;
         while(my $record=$do->fetchrow_hashref()){
-             print "Pending email found ($record->{Id})\n" if $verbose;
+             print "Pending email found (Id: $record->{Id})\n" if $verbose;
              $self->send(-email=>$record,-verbose=>$verbose);
              print "Sleeping between emails ($self->{frequency})\n";
              sleep $self->{frequency};
         }
-        print "Closing connection to SMTP server\n" if $verbose;
+        print "Closing connection with SMTP server\n" if $verbose;
         $self->_closesmtp;
      }
      print "Waiting for emails on MPG\n" if $verbose;
