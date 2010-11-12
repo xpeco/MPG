@@ -1,8 +1,8 @@
 - FIX: Change database name to MPG.
 
-- FIX: Move Fake From field to EMAIL_OUT.
+- FIX: Fake From field (EMAIL_OUT).
 
-- TODO: Multiple attachments per e-mail.
+- TODO: Multiple comma separated attachments per e-mail.
 
 - TODO: When retry count reaches X, do something
 (alert, notification, unmount...)
