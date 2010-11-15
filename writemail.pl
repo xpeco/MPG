@@ -75,7 +75,7 @@ if($file eq '') # No CSV specified
     print "     Inserting attachment(s) (if any)...";
     if ($attachment ne ''){
       my @attachment_list=split(/,/,$attachment);
-      foreach my $attach(@attachment_list)
+      foreach my $attach(@attachment_list){
         print "Inserting attachment: $attach\n";
         $query="insert into Email_ATTACHMENTS set `Path`=\'$attach\',`Header`=LAST_INSERT_ID()";
         $do=$db->prepare($query)->execute;
