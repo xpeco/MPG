@@ -1,5 +1,5 @@
 #!/usr/bin/perl
  use Mail::Sender;
- my $sender = new Mail::Sender {smtp => 'smtp.gmail.com'};
+ my $sender = new Mail::Sender {smtp => 'smtp.rioservices.fr'};
  die "Error: $Mail::Sender::Error\n" unless ref $sender;
  print join(', ', $sender->QueryAuthProtocols()),"\n";
