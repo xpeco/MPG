@@ -5,10 +5,9 @@ use strict;
 use warnings;
 use vars qw($VERSION);
 
-$VERSION='0.5';
+$VERSION='0.1';
 
 use Net::SMTP::SSL;
-#use Authen::SASL;
 use MIME::Base64;
 use File::Spec;
 use LWP::MediaTypes;
@@ -28,12 +27,13 @@ sub _initsmtp{
        my $login=shift;
        my $pass=shift;
        my $debug=shift;
+       # The module sets the SMTP google but could use another!
        if (not $self->{sender} = Net::SMTP::SSL->new('smtp.gmail.com',
                                  Port => 465,
-                                 Debug => $debug)) {die "Could not connect to server\n";
+                                 Debug => $debug)) {die "Could not connect to SMTP server\n";
        }
        # Authenticate
-       $self->{sender}->auth($login,$pass) || die "Authentication (SMTP) failed!\n";
+       $self->{sender}->auth($login,$pass) || die "Authentication (SMTP) failed\n";
 }
 
 sub bye{
@@ -44,19 +44,19 @@ sub bye{
 
 sub _checkfiles
 {
+       my $self=shift;
        my $attachs=shift;
-       my $verbose=shift;
        my @attachments=split(/,/,$attachs);
        foreach my $attach(@attachments)
        {
            unless (-f $attach) {
-              print "Unable to find attachment file $attach\n" if $verbose;
-              return 0;
+              $self->bye;
+              die "Unable to find the attachment file: $attach\n";
            }
            my $opened=open(FH, "$attach");
            if( not $opened){
-              print "Unable to open attachment file $attach\n" if $verbose;
-              return 0;
+              $self->bye;
+              die "Unable to open the attachment file: $attach\n";
            }
        }
        return 1;
@@ -84,6 +84,7 @@ sub send
    my $verbose=0;
    $verbose=$properties{'-verbose'} if defined $properties{'-verbose'};
 
+   # Load all the email param
    my $mail;
 
    $mail->{to}='';
@@ -107,7 +108,12 @@ sub send
    $mail->{attachments}='';
    $mail->{attachments}=$properties{'-attachments'} if defined $properties{'-attachments'};
 
-    eval{
+   if($self->_checkfiles($mail->{attachments}))
+   {
+      print "Attachments successfully verified\n" if $verbose;
+   }
+
+   eval{
       my $boundry=_createboundry();
 
       $self->{sender}->mail($self->{from}. "\n");
@@ -137,54 +143,49 @@ sub send
       if($mail->{attachments} ne '')
       {
         print "With Attachments\n" if $verbose;
-        if(_checkfiles($mail->{attachments},$verbose))
-        {
-           $self->{sender}->datasend("MIME-Version: 1.0\n");
-           $self->{sender}->datasend("Content-Type: multipart/mixed; BOUNDARY=\"$boundry\"\n");
+        $self->{sender}->datasend("MIME-Version: 1.0\n");
+        $self->{sender}->datasend("Content-Type: multipart/mixed; BOUNDARY=\"$boundry\"\n");
 
-           # Send text body
-           $self->{sender}->datasend("\n--$boundry\n");
-           $self->{sender}->datasend("Content-Type: text/plain\n");
-           $self->{sender}->datasend("\n");
-           $self->{sender}->datasend($mail->{body} . "\n\n");
+        # Send text body
+        $self->{sender}->datasend("\n--$boundry\n");
+        $self->{sender}->datasend("Content-Type: text/plain\n");
+        $self->{sender}->datasend("\n");
+        $self->{sender}->datasend($mail->{body} . "\n\n");
         
-           my @attachments=split(/,/,$mail->{attachments});
-           foreach my $attach(@attachments)
-           {
-             my($bytesread, $buffer, $data, $total);
-             my $opened=open(FH, "$attach");
-             binmode(FH);
-             while (($bytesread = sysread(FH, $buffer, 1024)) == 1024) {
-                $total += $bytesread;
-                $data .= $buffer;
-             }
-             if ($bytesread) {
-               $data .= $buffer;
-               $total += $bytesread;
-             }
-             close FH;
+         my @attachments=split(/,/,$mail->{attachments});
+         foreach my $attach(@attachments)
+         {
+           my($bytesread, $buffer, $data, $total);
+           my $opened=open(FH, "$attach");
+           binmode(FH);
+           while (($bytesread = sysread(FH, $buffer, 1024)) == 1024) {
+             $total += $bytesread;
+             $data .= $buffer;
+           }
+           if ($bytesread) {
+              $data .= $buffer;
+              $total += $bytesread;
+           }
+           close FH;
            # Get the file name without its directory
-             my ($volume, $dir, $fileName) = File::Spec->splitpath($attach);
-  
-           # Try and guess the MIME type from the file extension so
-           # that the email client doesn't have to
-             my $contentType = guess_media_type($attach);
-             print "Composing MIME with attach $attach\n" if $verbose;
-             if ($data) {
-                 $self->{sender}->datasend("--$boundry\n");
-                 $self->{sender}->datasend("Content-Type: $contentType; name=\"$fileName\"\n");
-                 $self->{sender}->datasend("Content-Transfer-Encoding: base64\n");
-                 $self->{sender}->datasend("Content-Disposition: attachment; =filename=\"$fileName\"\n\n");
-                 $self->{sender}->datasend(encode_base64($data));
-                 $self->{sender}->datasend("--$boundry\n");
-              }
-            }
-            $self->{sender}->datasend("\n--$boundry--\n"); # send endboundary end message
-         }
-         else {exit;} # errors with attachments
+           my ($volume, $dir, $fileName) = File::Spec->splitpath($attach);
+           # Get the MIME type
+           my $contentType = guess_media_type($attach);
+           print "Composing MIME with attach $attach\n" if $verbose;
+           if ($data) {
+              $self->{sender}->datasend("--$boundry\n");
+              $self->{sender}->datasend("Content-Type: $contentType; name=\"$fileName\"\n");
+              $self->{sender}->datasend("Content-Transfer-Encoding: base64\n");
+              $self->{sender}->datasend("Content-Disposition: attachment; =filename=\"$fileName\"\n\n");
+              $self->{sender}->datasend(encode_base64($data));
+              $self->{sender}->datasend("--$boundry\n");
+           }
+          }
+          $self->{sender}->datasend("\n--$boundry--\n"); # send endboundary end message
       }
-      else { # no attach
+      else { # No attachment
         print "With No attachments\n" if $verbose;
+        # Send text body
         $self->{sender}->datasend("MIME-Version: 1.0\n");
         $self->{sender}->datasend("Content-Type: text/plain\n");
         $self->{sender}->datasend("\n");
@@ -195,15 +196,15 @@ sub send
       $self->{sender}->dataend();
       print "Sending email\n" if $verbose;
 
-    }; # eval
+   }; # eval
 
-    if($@){
+   if($@){
        print "Warning: $@ \n" if $verbose; 
-    }
-    else
-    {
+   }
+   else
+   {
        print "Mail sent!\n" if $verbose;
-    }
+   }
 }
 
 1;
@@ -211,12 +212,11 @@ __END__
 
 =head1 NAME
 
-Email::Send::SMTP::Gmail;
+Email::Send::SMTP::Gmail - just send emails with attachments using Google's SMTP
 
 =head1 SYNOPSIS
 
 use Email::Send::SMTP::Gmail;
-
 
 my $mail=Email::Send::SMTP::Gmail->new( -smtp=>'gmail.com',
                                         -login=>'add_your_address@gmail.com',
@@ -228,17 +228,27 @@ $mail->bye;
 
 =head1 DESCRIPTION
 
-To be completed...
+Simple module to send emails through Google's SMTP with or without attachments.
+You can use from your Gmail account or your email if you are using Gmail to your domain.
+It supports basic functions such as CC, BCC, ReplyTo.
 
 =over 2 
 
 =item new(-login=>'', -pass=>'' [, -debug=>''])
 
-Creates the object, validating the credentials...
+It creates the object and opens a session with the SMTP.
 
-=item send(-to=>'', -subject=>'', -cc=>'', -bcc=>'', -replyto=>'', -body=>'', -attachments=>'')
+=item send(-to=>'', [-subject=>'', -cc=>'', -bcc=>'', -replyto=>'', -body=>'', -attachments=>''])
 
-Compose and send the email..
+It composes and sends the email in one shot
+
+=over 6
+
+=item  to, cc, bcc: comma separated email addresses
+
+=item attachments: comma separated files with full path
+
+=back
 
 =item bye
  
@@ -254,6 +264,7 @@ We will be notified, and then you'll automatically be notified of progress on yo
 =head1 AUTHORS
 
 Martin Vukovic, C<< mvukovic at microbotica.es >>
+
 Juan Jose 'Peco' San Martin, C<< <peco at cpan.org> >>
 
 =head1 COPYRIGHT
