@@ -74,10 +74,15 @@ if($file eq '') # No CSV specified
     print "OK\n";
     print "     Inserting attachment(s) (if any)...";
     if ($attachment ne ''){
+      print "Getting header:";
+      $query="select LAST_INSERT_ID() as HEADER";
+      $do=$db->prepare("$query")->execute;
+      my $headers=$do->fetchwrow_hashref();
+      print "$headers->{HEADER}\n";
       my @attachment_list=split(/,/,$attachment);
       foreach my $attach(@attachment_list){
         print "Inserting attachment: $attach\n";
-        $query="insert into Email_ATTACHMENTS set `Path`=\'$attach\',`Header`=LAST_INSERT_ID()";
+        $query="insert into Email_ATTACHMENTS set `Path`=\'$attach\',`Header`=$headers->{HEADER}";
         $do=$db->prepare($query)->execute;
       }
     }
