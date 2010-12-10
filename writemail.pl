@@ -82,11 +82,7 @@ if($file eq '') # No CSV specified
       my @attachment_list=split(/,/,$attachment);
       foreach my $attach(@attachment_list){
         print "Inserting attachment: $attach\n";
-<<<<<<< HEAD
         $query="insert into Email_ATTACHMENTS set `Path`=\'$attach\',`Header`=$headers->{HEADER}";
-=======
-        $query="insert into Email_ATTACHMENTS set `Path`=\'$attach\',`Header`=LAST_INSERT_ID()"; # <-- Bug: Fails if more than one attach
->>>>>>> 66f49d7fb156b041cc9dfd8973697b24c75a37bb
         $do=$db->prepare($query)->execute;
       }
     }
