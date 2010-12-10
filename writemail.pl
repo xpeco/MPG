@@ -12,7 +12,7 @@ sub help
   print "Version: XX\n";
   print "\nUsage:\n";
   print "\n(r)equired arguments\n\n";
-  print " -a [filename]\t\t'Attachment': Single filename to be attached.\n";
+  print " -a [filename]\t\t'Attachment': Single filename or multiple comma separated files to be attached.\n";
   print " -b \"Text\"\t(r)\t'Body': The main text of the e-mail. If more than one word, must be enclosed \n\t\t\tbetween single quotes (\').\n";
   print " -c\t\t\t'Class' of the e-mail. It's just 'tag' to clasify groups of e-mails.\n";
   print " -d [filename]\t\tReads addresses and attachments from a CSV file. See sample.csv.\n";
