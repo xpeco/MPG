@@ -12,7 +12,7 @@ USAGE
     - Database "MPG" must have the proper structure. See MPG.sql.
     - Table Config. Contains the configuration for the smtp accounts to be used.
     - Table Email_OUT. Contains the details of the e-mails.
-    - Table Email_ATTACHMENTS. Contains the details of the attachments (if any)
+    - Table Email_ATTACHMENTS. Contains the details of the attachments (if any).
     
     Daemon (1.pl)
     The daemon scans periodically the table Email_OUT in search of rows with field Sent equal to 'N' and
