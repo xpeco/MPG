@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use vars qw($VERSION);
 
-$VERSION='0.1';
+$VERSION='0.1.1';
 
 use Net::SMTP::SSL;
 use MIME::Base64;
@@ -215,15 +215,22 @@ Email::Send::SMTP::Gmail - just send emails with attachments using Google's SMTP
 
 =head1 SYNOPSIS
 
-use Email::Send::SMTP::Gmail;
+                 use strict;
+                 use warnings;
 
-my $mail=Email::Send::SMTP::Gmail->new( -smtp=>'gmail.com',
-                                        -login=>'add_your_address@gmail.com',
-                                        -pass=>'add_your_pass');
+                 use Email::Send::SMTP::Gmail;
 
-$mail->send(-to=>'target@xxx.com', -subject=>'Hello!', -verbose=>'1', -body=>'Just testing it', -attachments=>'full_path_to_file');
+                 my $mail=Email::Send::SMTP::Gmail->new( -smtp=>'gmail.com',
+                                                         -login=>'add_your_address@gmail.com',
+                                                         -pass=>'add_your_pass');
 
-$mail->bye;
+                $mail->send(-to=>'target@xxx.com',
+                            -subject=>'Hello!',
+                            -verbose=>'1',
+                            -body=>'Just testing it',
+                            -attachments=>'full_path_to_file');
+
+                $mail->bye;
 
 =head1 DESCRIPTION
 
@@ -262,7 +269,7 @@ We will be notified, and then you'll automatically be notified of progress on yo
 
 =head1 AUTHORS
 
-Martin Vukovic, C<< mvukovic at microbotica.es >>
+Martin Vukovic, C<< <mvukovic at microbotica.es> >>
 
 Juan Jose 'Peco' San Martin, C<< <peco at cpan.org> >>
 
