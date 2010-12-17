@@ -77,7 +77,7 @@ if($file eq '') # No CSV specified
       print "Getting header:";
       $query="select LAST_INSERT_ID() as HEADER";
       $do=$db->prepare("$query")->execute;
-      my $headers=$do->fetchwrow_hashref();
+      my $headers=$do->fetchrow_hashref();
       print "$headers->{HEADER}\n";
       my @attachment_list=split(/,/,$attachment);
       foreach my $attach(@attachment_list){
