@@ -212,7 +212,7 @@ __END__
 
 =head1 NAME
 
-Email::Send::SMTP::Gmail - Send emails with attachments using Google's SMTP
+Email::Send::SMTP::Gmail - Sends emails with attachments using Google's SMTP
 
 =head1 SYNOPSIS
 
@@ -236,7 +236,7 @@ Email::Send::SMTP::Gmail - Send emails with attachments using Google's SMTP
 =head1 DESCRIPTION
 
 Simple module to send emails through Google's SMTP with or without attachments.
-You can use from your Gmail account or your email if you are using Gmail to your domain.
+Works with regular Gmail accounts as with Google Apps (your own domains).
 It supports basic functions such as CC, BCC, ReplyTo.
 
 =over 2 
@@ -259,14 +259,14 @@ It composes and sends the email in one shot
 
 =item bye
  
-Close the SMTP session
+Closes the SMTP session
 
 =back
 
 =head1 BUGS
 
 Please report any bugs or feature requests to C<bug-email-send-smtp-gmail at rt.cpan.org> or through the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Email-Send-SMTP-Gmail>.
-We will be notified, and then you'll automatically be notified of progress on your bug as we make changes.
+You will automatically be notified of the progress on your bug as we make the changes.
 
 =head1 SUPPORT
 
