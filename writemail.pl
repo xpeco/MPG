@@ -72,17 +72,15 @@ if($file eq '') # No CSV specified
     my $query="insert into Email_OUT set `From`=\'$from\', `ReplyTo`=\'$reply\', `Subject`=\'$subject\', `To`=\'$to\', `Mount`=\'Y\', `ClusterId`=\'$xml->{cluster}\', `Body`=\'$body\', `Class`=\'$class\'";
     my $do=$db->prepare("$query")->execute;
     print "OK\n";
-    print "     Inserting attachment(s) (if any)...";
+    print "     Inserting attachment(s) (if any)\n";
     if ($attachment ne ''){
-      print "Getting header:";
-      $query="select LAST_INSERT_ID() as HEADER";
-      $do=$db->prepare("$query")->execute;
-      my $headers=$do->fetchrow_hashref();
-      print "$headers->{HEADER}\n";
+      print "     Getting Id:";
+     my $header=$db->last_insert_id(undef,undef,undef,undef);
+      print " $header\n";
       my @attachment_list=split(/,/,$attachment);
       foreach my $attach(@attachment_list){
-        print "Inserting attachment: $attach\n";
-        $query="insert into Email_ATTACHMENTS set `Path`=\'$attach\',`Header`=$headers->{HEADER}";
+        print "     Inserting attachment: $attach\n";
+        $query="insert into Email_ATTACHMENTS set `Path`=\'$attach\',`Header`=$header";
         $do=$db->prepare($query)->execute;
       }
     }
