@@ -106,7 +106,7 @@ sub loop{
      print "Waiting for emails on MPG\n" if $verbose;
      sleep 3;
      
-     # TODO: Check if mysql connection is still alive. If not, try to reconnect
+     # TODO Check if mysql connection is still alive. If not, try to reconnect
    }
 }
 sub _createboundry
