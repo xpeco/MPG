@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use MPGMail;
+use MPG::MPGMail;
 
 my $env=MPGMail->new(-account=>'123');
 

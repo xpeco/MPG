@@ -28,7 +28,7 @@ sub new{
 
 sub _initxml{
        my $self=shift;
-       $self->{xml}=XMLin('./config.xml');
+       $self->{xml}=XMLin('/etc/MPG/config.xml');
        print "Server: $self->{xml}->{host}\n
        User: $self->{xml}->{user}\n
        Pass: you know \n

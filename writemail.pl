@@ -56,7 +56,7 @@ $attachment=$options{a} if defined $options{a};
 if ($reply eq ''){$reply=$from;}
 
 # Create DB connection
-my $xml=XMLin('./config.xml');
+my $xml=XMLin('/etc/MPG/config.xml');
 print "Server: $xml->{host}\nUser: $xml->{user}\nPass: you know\nCluster:$xml->{cluster}";
 
     my $db=DBI->connect("DBI:mysql:$xml->{database}:$xml->{host}",$xml->{user},$xml->{password});
