@@ -90,7 +90,8 @@ sub loop{
    print "Looking for emails on MPG\n" if $verbose;
    while(1){
      my $do=$self->{db}->prepare("select * from `Email_OUT` where Sent<>'Y' and Retry<'10' and Mount='Y' and ClusterId=\'$self->{xml}->{cluster}\' order by Id asc limit 10");
-     $do->execute;
+     if (!$do->execute) { $self->_initdb }
+     
      if ($do->rows > 0){
         print "Connecting to SMTP server\n" if $verbose;
         $self->_initsmtp;
@@ -106,7 +107,11 @@ sub loop{
      print "Waiting for emails on MPG\n" if $verbose;
      sleep 3;
      
-     # TODO Check if mysql connection is still alive. If not, try to reconnect
+     if (not $self->{db}) {
+         print "";
+         $self->_initdb;
+     }
+         
    }
 }
 sub _createboundry
