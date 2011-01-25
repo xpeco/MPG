@@ -14,6 +14,7 @@ WriteMakefile(
     PREREQ_PM => {
         'Test::More' => 0,
         'Net::SMTP::SSL' => 0,
+        'Net::SMTP_auth' => 0,
         'MIME::Base64' => 0,
         'File::Spec' => 0,
         'LWP::MediaTypes' => 0
