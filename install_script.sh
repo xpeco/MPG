@@ -13,8 +13,8 @@ echo ""
 echo "/etc/MPG"
 	mkdir -p /etc/MPG
 
-echo "/usr/lib/perl/MPG"
-	mkdir -p /usr/lib/perl/MPG
+echo "/usr/lib/perl/[PERLVER]/MPG"
+	mkdir -p /usr/lib/perl/{$PERLVER}/MPG
 
 echo "/usr/local/bin"
 	mkdir -p /usr/local/bin
