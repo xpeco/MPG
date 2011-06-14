@@ -44,8 +44,10 @@ while(1){
 				 }
 				 else {warn "$@\n" if $@;}
 			 }
+			 #my $destroy=eval {$object->{twitter}->destroy_direct_message($status->{id});} warn "@\n" if $@;
+
         }
-		  #else {print "already read\n";}
+		  else {print "already read\n";}
       }
    }
 print "looping\n";
