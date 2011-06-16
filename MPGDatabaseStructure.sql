@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.1.49, for debian-linux-gnu (x86_64)
+-- MySQL dump 10.13  Distrib 5.5.13, for Linux (i686)
 --
--- Host: 192.168.99.195    Database: MPG
+-- Host: 192.168.99.195    Database: Comway
 -- ------------------------------------------------------
--- Server version	5.1.41-3ubuntu12.6
+-- Server version	5.1.41-3ubuntu12.10
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -25,14 +25,12 @@ DROP TABLE IF EXISTS `Config`;
 CREATE TABLE `Config` (
   `Id` bigint(20) NOT NULL AUTO_INCREMENT,
   `SMTP` varchar(100) NOT NULL,
-  `EFROM` varchar(100) NOT NULL,
-  `EAUTH` enum('LOGIN','PLAIN','CRAM-MD5','NTLM') NOT NULL,
   `EAUTHID` varchar(100) NOT NULL,
   `EAUTHPASS` varchar(100) NOT NULL,
   `Status` enum('Enabled','Disabled') NOT NULL,
   `Frequency` int(11) NOT NULL DEFAULT '3',
   PRIMARY KEY (`Id`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -46,10 +44,11 @@ CREATE TABLE `Email_ATTACHMENTS` (
   `Id` bigint(20) NOT NULL AUTO_INCREMENT,
   `Path` varchar(250) NOT NULL,
   `Header` bigint(20) NOT NULL,
+  `AttDate` date NOT NULL,
   PRIMARY KEY (`Id`),
   KEY `Header` (`Header`),
   CONSTRAINT `Header` FOREIGN KEY (`Header`) REFERENCES `Email_OUT` (`Id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=55 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=5864 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -77,10 +76,71 @@ CREATE TABLE `Email_OUT` (
   `Sent` enum('Y','N') NOT NULL DEFAULT 'N',
   `Zip` enum('Y','N') NOT NULL DEFAULT 'N',
   `Created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `ReplyTo` varchar(259) NOT NULL,
+  `Replyto` varchar(259) NOT NULL,
   `Class` varchar(250) NOT NULL DEFAULT 'NONE',
   PRIMARY KEY (`Id`)
-) ENGINE=InnoDB AUTO_INCREMENT=144 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6213 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `TwitterAction`
+--
+
+DROP TABLE IF EXISTS `TwitterAction`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `TwitterAction` (
+  `Id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `Type` enum('SQL','SUB') NOT NULL,
+  `SQL_Host` varchar(50) NOT NULL,
+  `SQL_Table` varchar(50) NOT NULL,
+  `SQL_User` varchar(50) NOT NULL,
+  `SQL_Pass` varchar(50) NOT NULL,
+  `SQL_Query` longtext NOT NULL,
+  `SQL_Answer` longtext NOT NULL,
+  `Status` enum('Enabled','Disabled') NOT NULL,
+  `Trigger` varchar(50) NOT NULL,
+  PRIMARY KEY (`Id`)
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `TwitterConfig`
+--
+
+DROP TABLE IF EXISTS `TwitterConfig`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `TwitterConfig` (
+  `Id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `ACCOUNT` varchar(100) NOT NULL,
+  `PASSWORD` varchar(100) NOT NULL,
+  `Frequency` int(3) NOT NULL,
+  `LastID` varchar(250) NOT NULL,
+  `Status` enum('Enabled','Disabled') NOT NULL,
+  `consumer_key` varchar(100) NOT NULL,
+  `consumer_secret` varchar(100) NOT NULL,
+  `access_token` varchar(100) NOT NULL,
+  `access_token_secret` varchar(100) NOT NULL,
+  PRIMARY KEY (`Id`)
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `TwitterMessages`
+--
+
+DROP TABLE IF EXISTS `TwitterMessages`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `TwitterMessages` (
+  `Id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `From` varchar(100) NOT NULL,
+  `TimeStamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `Message` varchar(250) NOT NULL,
+  `Dump` mediumtext NOT NULL,
+  PRIMARY KEY (`Id`)
+) ENGINE=MyISAM AUTO_INCREMENT=57 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -92,4 +152,4 @@ CREATE TABLE `Email_OUT` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2010-10-19 11:10:23
+-- Dump completed on 2011-06-16 16:39:10

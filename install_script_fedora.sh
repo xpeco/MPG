@@ -36,7 +36,7 @@ echo "MPGTwitter.pm -> /usr/local/lib/perl5/MPG"
 echo "writemail.pl -> /usr/local/bin"
 	cp -f writemail.pl /usr/local/bin/
 
-echo "MPGMail.pl -> /usr/local/bin"
+echo "MPGDaemon.pl -> /usr/local/bin"
 	cp -f MPGDaemon.pl /usr/local/bin/
 	
 echo "twitter.pl -> /usr/local/bin"
