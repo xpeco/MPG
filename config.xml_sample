@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- MPG basic configration -->
+<opt user="user" password="pass" database="dbcomway" host="host123" cluster="tlon">
+</opt>
