@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use MPGTwitter;
+use MPG::MPGTwitter;
 use Data::Dumper;
 
 my $object=MPGTwitter->new(-debug=>1);
