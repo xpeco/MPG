@@ -50,7 +50,7 @@ sub _initdbaction{
 		 $self->{action}->{trigger}=$records->[0]->{Trigger};
 
        if (not $self->{dbaction}){
-         print STDERR "Connection to DB Action failed :-(\n";
+         print STDERR "Connection to DB TwitterAction failed :-(\n";
          exit(0);
        }
 }
