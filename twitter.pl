@@ -38,7 +38,7 @@ while(1){
  				 my $result= eval {$object->{twitter}->new_direct_message($data->{from},$texto)};
              if ($@=~/Parece que ya has dicho eso/)
 				 {
-						$texto.=' (Cuidado, ya habías pedido tu saldo hace un momento)';
+						$texto.=' (Cuidado, ya has pedido tu saldo hace un momento)';
 						$result= eval {$object->{twitter}->new_direct_message($data->{from},$texto)};
 	               warn "$@\n" if $@;
 				 }
