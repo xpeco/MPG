@@ -23,25 +23,25 @@ echo ""
 echo "Copying files..."
 echo ""
 
-echo "config.xml -> /etc/MPG"
+echo "* config.xml -> /etc/MPG"
 	cp -f config.xml /etc/MPG/
 
-echo "MPGMail.pm -> /usr/local/lib/perl5/MPG"
+echo "* MPGMail.pm -> /usr/local/lib/perl5/MPG"
 	cp -f MPGMail.pm /usr/local/lib/perl5/MPG/
 	
-echo "MPGTwitter.pm -> /usr/local/lib/perl5/MPG"
+echo "* MPGTwitter.pm -> /usr/local/lib/perl5/MPG"
 	cp -f MPGTwitter.pm /usr/local/lib/perl5/MPG	
 
 
-echo "writemail.pl -> /usr/local/bin"
+echo "* writemail.pl -> /usr/local/bin"
 	cp -f writemail.pl /usr/local/bin/
 
-echo "MPGDaemon.pl -> /usr/local/bin"
+echo "* MPGDaemon.pl -> /usr/local/bin"
 	cp -f MPGDaemon.pl /usr/local/bin/
 	
-echo "twitter.pl -> /usr/local/bin"
+echo "* twitter.pl -> /usr/local/bin"
 	cp -f twitter.pl /usr/local/bin/	
 
 echo ""
-echo "Done."
+echo "All done."
 echo ""

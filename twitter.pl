@@ -20,7 +20,7 @@ while(1){
         if ($status->{id} > $object->{lastid})
         {
           print "New direct message\n";
-          $object->{lastid}=$status->{id}; # store the last direct_message Id to not repeat
+          $object->{lastid}=$status->{id}; # store the last direct_message Id to avoid repeating
           $object->updateLastId();
 
           print "Tweet nº: $status->{id}\n Created at $status->{created_at}\n By: <$status->{sender}->{screen_name}>\n Content: $status->{text}\n";

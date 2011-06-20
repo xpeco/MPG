@@ -13,7 +13,7 @@ echo ""
 echo "/etc/MPG"
 	mkdir -p /etc/MPG
 
-echo "/usr/local/lib/perl5/MPG"
+echo "/usr/lib/perl/$PERLVER/MPG"
 	mkdir -p /usr/lib/perl/$PERLVER/MPG
 
 echo "/usr/local/bin"
@@ -23,25 +23,25 @@ echo ""
 echo "Copying files..."
 echo ""
 
-echo "config.xml -> /etc/MPG"
+echo "* config.xml -> /etc/MPG"
 	cp -f config.xml /etc/MPG/
 
-echo "MPGMail.pm -> /usr/lib/perl/$PERLVER/MPG"
+echo "* MPGMail.pm -> /usr/lib/perl/$PERLVER/MPG"
 	cp -f MPGMail.pm /usr/lib/perl/$PERLVER/MPG/
 	
-echo "MPGTwitter.pm -> /usr/lib/perl/$PERLVER/MPG"
+echo "* MPGTwitter.pm -> /usr/lib/perl/$PERLVER/MPG"
 	cp -f MPGTwitter.pm /usr/lib/perl/$PERLVER/MPG	
 
 
-echo "writemail.pl -> /usr/local/bin"
+echo "* writemail.pl -> /usr/local/bin"
 	cp -f writemail.pl /usr/local/bin/
 
-echo "MPGDaemon.pl -> /usr/local/bin"
+echo "* MPGDaemon.pl -> /usr/local/bin"
 	cp -f MPGDaemon.pl /usr/local/bin/
 	
-echo "twitter.pl -> /usr/local/bin"
+echo "* twitter.pl -> /usr/local/bin"
 	cp -f twitter.pl /usr/local/bin/	
 
 echo ""
-echo "Done."
+echo "All done."
 echo ""
