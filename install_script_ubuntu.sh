@@ -43,7 +43,7 @@ echo "* twitter.pl -> /usr/local/bin"
 	cp -f twitter.pl /usr/local/bin/	
 
 sudo apt-get update
-sudo apt-get install libnet-oauth-perl libnet-twitter-lite-perl
+sudo apt-get install libnet-oauth-perl libnet-twitter-lite-perl libxml-simple-perl
 
 echo ""
 echo "All done."
