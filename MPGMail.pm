@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use vars qw($VERSION);
 
-$VERSION='0.5';
+$VERSION='0.6';
 
 use DBI;
 use Net::SMTP::SSL;
@@ -43,9 +43,18 @@ sub _initdb{
        $self->{xml}->{user},
        $self->{xml}->{password});
        
+       # Never dies....
        if (not $self->{db}){
          print STDERR "Connection to DB failed :-(\n";
-         exit(0);
+         my $error=1;
+         while($error){
+          print "Do not worry, trying to reconnect to DB\n";
+          sleep 5;
+          $self->{db}=DBI->connect("DBI:mysql:$self->{xml}->{database}:$self->{xml}->{host}",
+          $self->{xml}->{user},
+          $self->{xml}->{password});
+          if ($self->{db}){$error=0;}
+	 }
        }
 }
 
