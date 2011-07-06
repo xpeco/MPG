@@ -4,7 +4,7 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
-#PERLVER=`perl -v | awk '/This/ {print $4}' | sed -e 's/v//'`
+PERLVER=`perl -v | awk '/This/ {print $4}' | sed -e 's/v//'`
 
 echo ""
 echo "Creating folders..."
@@ -13,8 +13,8 @@ echo ""
 echo "/etc/MPG"
 	mkdir -p /etc/MPG
 
-echo "/usr/local/lib/perl5/MPG"
-	mkdir -p /usr/local/lib/perl5/MPG
+echo "/usr/lib/perl/$PERLVER/MPG"
+	mkdir -p /usr/lib/perl/$PERLVER/MPG
 
 echo "/usr/local/bin"
 	mkdir -p /usr/local/bin
@@ -26,11 +26,11 @@ echo ""
 echo "* config.xml -> /etc/MPG"
 	cp -f config.xml /etc/MPG/
 
-echo "* MPGMail.pm -> /usr/local/lib/perl5/MPG"
-	cp -f MPGMail.pm /usr/local/lib/perl5/MPG/
+echo "* MPGMail.pm -> /usr/lib/perl/$PERLVER/MPG"
+	cp -f MPGMail.pm /usr/lib/perl/$PERLVER/MPG/
 	
-echo "* MPGTwitter.pm -> /usr/local/lib/perl5/MPG"
-	cp -f MPGTwitter.pm /usr/local/lib/perl5/MPG	
+echo "* MPGTwitter.pm -> /usr/lib/perl/$PERLVER/MPG"
+	cp -f MPGTwitter.pm /usr/lib/perl/$PERLVER/MPG	
 
 
 echo "* writemail.pl -> /usr/local/bin"
@@ -41,6 +41,9 @@ echo "* MPGDaemon.pl -> /usr/local/bin"
 	
 echo "* twitter.pl -> /usr/local/bin"
 	cp -f twitter.pl /usr/local/bin/	
+
+sudo apt-get update
+sudo apt-get install libnet-oauth-perl libnet-twitter-lite-perl libxml-simple-perl
 
 echo ""
 echo "All done."

@@ -10,30 +10,33 @@ DESCRIPTION
 USAGE
 
     Database and tables
-    - Database "MPG" must have the proper structure. See MPG.sql.
+    - Database "Comway" must have the proper structure. See MPGDatabaseStructure.sql.
     - Table Config. Contains the configuration for the smtp accounts to be used.
     - Table Email_OUT. Contains the details of the e-mails.
     - Table Email_ATTACHMENTS. Contains the details of the attachments (if any).
+    - Table TwitterConfig. Configuration table for the twitter account.
+    - Table TwitterAction. Determines what to do when recieving tweets matching a pattern.
+    - Table TwitterMessages. Stores recieved messages recieved via twitter.
     
-    Daemon (1.pl)
-    The daemon scans periodically the table Email_OUT in search of rows with field Sent equal to 'N' and
-    tries to send them in groups of 10, waiting for a few seconds between each try so that the server doesn't
-    get overflowed.
+    Daemons
+    - MPGDaemon.pl
+    This daemon scans periodically the table Email_OUT in search of rows with field Sent equal to 'N'.
+    - twitter.pl
+    This daemon checks if there are new twitter messages.
     
-    Script (writemail.pl)
-    writemail.pl is a script that makes easy to create new e-mails. Run writemail.pl with no arguments to
+    Scripts
+    - writemail.pl
+    Is a script that makes easy to create new e-mails. Run writemail.pl with no arguments to
     see the usage help.
-    
-    New messages can be created simply by adding a new record in the Email_OUT table.
+    Note: New e-mails can also be created simply by adding a new record in the Email_OUT table.
     
 FEATURES
     
     - Clustered: Different clients use the same daemon simultaneously without interefering with each other.
-    - Currently only supports e-mail.
+    - Currently only supports e-mail and twitter (experimental).
 
 TODO
-
-    Modules for other protocols (ftp, twitter, SMS)
+    Modules for other protocols (ftp, SMS, facebook)
 
 KNOWN BUGS
 
