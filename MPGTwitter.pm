@@ -54,6 +54,7 @@ sub _initdbaction{
        $self->{dbaction}=DBI->connect("DBI:mysql:$records->[0]->{SQL_Table}:$records->[0]->{SQL_Host}",$records->[0]->{SQL_User},$records->[0]->{SQL_Pass});
        $self->{action}->{query}=$records->[0]->{SQL_Query};
        $self->{action}->{answer}=$records->[0]->{SQL_Answer};
+       $self->{action}->{no_answer}=$records->[0]->{SQL_NoAnswer};
        $self->{action}->{trigger}=$records->[0]->{Trigger};
 
        if (not $self->{dbaction}){
@@ -65,6 +66,7 @@ sub _initdbaction{
           $self->{dbaction}=DBI->connect("DBI:mysql:$records->[0]->{SQL_Table}:$records->[0]->{SQL_Host}",$records->[0]->{SQL_User},$records->[0]->{SQL_Pass});
           $self->{action}->{query}=$records->[0]->{SQL_Query};
           $self->{action}->{answer}=$records->[0]->{SQL_Answer};
+          $self->{action}->{no_answer}=$records->[0]->{SQL_NoAnswer};
           $self->{action}->{trigger}=$records->[0]->{Trigger};
           if ($self->{dbaction}){$error=0;}
          }
@@ -104,6 +106,21 @@ sub updateLastId{
 
 }
 
+sub ping{
+      my $self=shift;
+      if(!$self->{db}->ping())
+      {
+        print "Reinit DB\n";
+        $self->_initdb;
+      }
+      if(!$self->{dbaction}->ping())
+      {
+        print "Reinit DB\n";
+        $self->_initdbaction;
+      }
+      return;
+}
+
 sub _insertmessage{
       my $self=shift;
       my $data=shift;
@@ -127,8 +144,15 @@ sub _action{
        if(@$records!=0){
          $var=$records->[0]->{VAR};
        }
-       my $string=$self->{action}->{answer};
-       $string=~s/_VAR_/$var/g;
+       my $string;
+       if($var eq 'desconocido'){
+          $string=$self->{action}->{no_answer};
+       }
+       else
+       {
+          $string=$self->{action}->{answer};
+          $string=~s/_VAR_/$var/g;
+       }
        return $string;
 }
 

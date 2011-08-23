@@ -98,6 +98,7 @@ CREATE TABLE `TwitterAction` (
   `SQL_Pass` varchar(50) NOT NULL,
   `SQL_Query` longtext NOT NULL,
   `SQL_Answer` longtext NOT NULL,
+  `SQL_NoAnswer` longtext NOT NULL,
   `Status` enum('Enabled','Disabled') NOT NULL,
   `Trigger` varchar(50) NOT NULL,
   PRIMARY KEY (`Id`)
