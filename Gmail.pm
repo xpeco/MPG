@@ -1,11 +1,10 @@
-#package Email::Send::SMTP::Gmail;
-package Gmail;
+package Email::Send::SMTP::Gmail;
 
 use strict;
 use warnings;
 use vars qw($VERSION);
 
-$VERSION='0.1';
+$VERSION='0.24';
 
 use Net::SMTP::SSL;
 use MIME::Base64;
@@ -13,64 +12,68 @@ use File::Spec;
 use LWP::MediaTypes;
 
 sub new{
-       my $class=shift;
-       my $self={@_};
-       bless($self, $class);
-       my %properties=@_;
-       $self->_initsmtp($properties{'-login'},$properties{'-pass'},$properties{'-debug'});
-       $self->{from}=$properties{'-login'};
-       return $self;
+  my $class=shift;
+  my $self={@_};
+  bless($self, $class);
+  my %properties=@_;
+  $self->_initsmtp($properties{'-login'},$properties{'-pass'},$properties{'-debug'});
+  $self->{from}=$properties{'-login'};
+  return $self;
 }
 
 sub _initsmtp{
-       my $self=shift;
-       my $login=shift;
-       my $pass=shift;
-       my $debug=shift;
-       # The module sets the SMTP google but could use another!
-       if (not $self->{sender} = Net::SMTP::SSL->new('smtp.gmail.com',
+  my $self=shift;
+  my $login=shift;
+  my $pass=shift;
+  my $debug=shift;
+  # The module sets the SMTP google but could use another!
+  if (not $self->{sender} = Net::SMTP::SSL->new('smtp.gmail.com',
                                  Port => 465,
                                  Debug => $debug)) {die "Could not connect to SMTP server\n";
-       }
-       # Authenticate
-       $self->{sender}->auth($login,$pass) || die "Authentication (SMTP) failed\n";
+  }
+  # Authenticate
+  $self->{sender}->auth($login,$pass) || die "Authentication (SMTP) failed\n";
 }
 
 sub bye{
-       my $self=shift;
-       $self->{sender}->quit();
-       return $self;
+  my $self=shift;
+  $self->{sender}->quit();
+  return $self;
 }
 
 sub _checkfiles
 {
-       my $self=shift;
-       my $attachs=shift;
-       my @attachments=split(/,/,$attachs);
-       foreach my $attach(@attachments)
-       {
-           unless (-f $attach) {
-              $self->bye;
-              die "Unable to find the attachment file: $attach\n";
-           }
-           my $opened=open(FH, "$attach");
-           if( not $opened){
-              $self->bye;
-              die "Unable to open the attachment file: $attach\n";
-           }
-       }
-       return 1;
+# Checks that all the attachments exist
+  my $self=shift;
+  my $attachs=shift;
+  my @attachments=split(/,/,$attachs);
+  foreach my $attach(@attachments)
+  {
+     $attach=~s/\A[\s,\0,\t,\n,\r]*//;
+     $attach=~s/[\s,\0,\t,\n,\r]*\Z//;
+
+     unless (-f $attach) {
+       $self->bye;
+       die "Unable to find the attachment file: $attach\n";
+     }
+     my $opened=open(FH, "$attach");
+     if( not $opened){
+        $self->bye;
+        die "Unable to open the attachment file: $attach\n";
+     }
+  }
+  return 1;
 }
 
 sub _createboundry
 {
 # Create arbitrary frontier text used to seperate different parts of the message
-   my ($bi, $bn, @bchrs);
-   my $boundry = "";
-   foreach $bn (48..57,65..90,97..122) {
+  my ($bi, $bn, @bchrs);
+  my $boundry = "";
+  foreach $bn (48..57,65..90,97..122) {
      $bchrs[$bi++] = chr($bn);
-   }
-   foreach $bn (0..20) {
+  }
+  foreach $bn (0..20) {
      $boundry .= $bchrs[rand($bi)];
   }
   return $boundry;
@@ -78,42 +81,44 @@ sub _createboundry
 
 sub send
 {
-   my $self=shift;
-   my %properties=@_; # rest of params by hash
+  my $self=shift;
+  my %properties=@_; # rest of params by hash
 
-   my $verbose=0;
-   $verbose=$properties{'-verbose'} if defined $properties{'-verbose'};
+  my $verbose=0;
+  $verbose=$properties{'-verbose'} if defined $properties{'-verbose'};
+  # Load all the email param
+  my $mail;
 
-   # Load all the email param
-   my $mail;
+  $mail->{to}='';
+  $mail->{to}=$properties{'-to'} if defined $properties{'-to'};
 
-   $mail->{to}='';
-   $mail->{to}=$properties{'-to'} if defined $properties{'-to'};
+  $mail->{replyto}=$self->{from};
+  $mail->{replyto}=$properties{'-replyto'} if defined $properties{'-replyto'};
 
-   $mail->{replyto}=$self->{from};
-   $mail->{replyto}=$properties{'-replyto'} if defined $properties{'-replyto'};
+  $mail->{cc}='';
+  $mail->{cc}=$properties{'-cc'} if defined $properties{'-cc'};
 
-   $mail->{cc}='';
-   $mail->{cc}=$properties{'-cc'} if defined $properties{'-cc'};
+  $mail->{bcc}='';
+  $mail->{bcc}=$properties{'-bcc'} if defined $properties{'-bcc'};
 
-   $mail->{bcc}='';
-   $mail->{bcc}=$properties{'-bcc'} if defined $properties{'-bcc'};
+  $mail->{charset}='UTF-8';
+  $mail->{charset}=$properties{'-charset'} if defined $properties{'-charset'};
 
-   $mail->{subject}='';
-   $mail->{subject}=$properties{'-subject'} if defined $properties{'-subject'};
+  $mail->{subject}='';
+  $mail->{subject}=$properties{'-subject'} if defined $properties{'-subject'};
 
-   $mail->{body}='';
-   $mail->{body}=$properties{'-body'} if defined $properties{'-body'};
+  $mail->{body}='';
+  $mail->{body}=$properties{'-body'} if defined $properties{'-body'};
 
-   $mail->{attachments}='';
-   $mail->{attachments}=$properties{'-attachments'} if defined $properties{'-attachments'};
+  $mail->{attachments}='';
+  $mail->{attachments}=$properties{'-attachments'} if defined $properties{'-attachments'};
 
-   if($self->_checkfiles($mail->{attachments}))
-   {
+  if($self->_checkfiles($mail->{attachments}))
+  {
       print "Attachments successfully verified\n" if $verbose;
-   }
+  }
 
-   eval{
+  eval{
       my $boundry=_createboundry();
 
       $self->{sender}->mail($self->{from}. "\n");
@@ -148,14 +153,20 @@ sub send
 
         # Send text body
         $self->{sender}->datasend("\n--$boundry\n");
-        $self->{sender}->datasend("Content-Type: text/plain\n");
+        $self->{sender}->datasend("Content-Type: text/plain; charset=".$mail->{charset}."\n");
+
         $self->{sender}->datasend("\n");
         $self->{sender}->datasend($mail->{body} . "\n\n");
         
-         my @attachments=split(/,/,$mail->{attachments});
-         foreach my $attach(@attachments)
-         {
+        my @attachments=split(/,/,$mail->{attachments});
+
+        foreach my $attach(@attachments)
+        {
            my($bytesread, $buffer, $data, $total);
+
+           $attach=~s/\A[\s,\0,\t,\n,\r]*//;
+           $attach=~s/[\s,\0,\t,\n,\r]*\Z//;
+
            my $opened=open(FH, "$attach");
            binmode(FH);
            while (($bytesread = sysread(FH, $buffer, 1024)) == 1024) {
@@ -187,7 +198,7 @@ sub send
         print "With No attachments\n" if $verbose;
         # Send text body
         $self->{sender}->datasend("MIME-Version: 1.0\n");
-        $self->{sender}->datasend("Content-Type: text/plain\n");
+        $self->{sender}->datasend("Content-Type: text/plain; charset=".$mail->{charset}."\n");
         $self->{sender}->datasend("\n");
         $self->{sender}->datasend($mail->{body} . "\n\n");
       }
@@ -196,15 +207,15 @@ sub send
       $self->{sender}->dataend();
       print "Sending email\n" if $verbose;
 
-   }; # eval
+  }; # eval
 
-   if($@){
-       print "Warning: $@ \n" if $verbose; 
-   }
-   else
-   {
-       print "Mail sent!\n" if $verbose;
-   }
+  if($@){
+     print "Warning: $@ \n" if $verbose; 
+  }
+  else
+  {
+     print "Mail sent!\n" if $verbose;
+  }
 }
 
 1;
@@ -212,24 +223,32 @@ __END__
 
 =head1 NAME
 
-Email::Send::SMTP::Gmail - just send emails with attachments using Google's SMTP
+Email::Send::SMTP::Gmail - Sends emails with attachments using Google's SMTP
 
 =head1 SYNOPSIS
 
-use Email::Send::SMTP::Gmail;
+   use strict;
+   use warnings;
 
-my $mail=Email::Send::SMTP::Gmail->new( -smtp=>'gmail.com',
-                                        -login=>'add_your_address@gmail.com',
-                                        -pass=>'add_your_pass');
+   use Email::Send::SMTP::Gmail;
 
-$mail->send(-to=>'target@xxx.com', -subject=>'Hello!', -verbose=>'1', -body=>'Just testing it', -attachments=>'full_path_to_file');
+   my $mail=Email::Send::SMTP::Gmail->new( -smtp=>'gmail.com',
+                                           -login=>'whateveraddress@gmail.com',
+                                           -pass=>'whatever_pass');
 
-$mail->bye;
+   $mail->send(-to=>'target@xxx.com',
+               -subject=>'Hello!',
+               -charset=>'KOI8-R'
+               -verbose=>'1',
+               -body=>'Just testing it',
+               -attachments=>'full_path_to_file');
+
+   $mail->bye;
 
 =head1 DESCRIPTION
 
 Simple module to send emails through Google's SMTP with or without attachments.
-You can use from your Gmail account or your email if you are using Gmail to your domain.
+Works with regular Gmail accounts as with Google Apps (your own domains).
 It supports basic functions such as CC, BCC, ReplyTo.
 
 =over 2 
@@ -238,7 +257,7 @@ It supports basic functions such as CC, BCC, ReplyTo.
 
 It creates the object and opens a session with the SMTP.
 
-=item send(-to=>'', [-subject=>'', -cc=>'', -bcc=>'', -replyto=>'', -body=>'', -attachments=>''])
+=item send(-to=>'', [-subject=>'', -cc=>'', -bcc=>'', -replyto=>'', -charset=>'', -body=>'', -attachments=>''])
 
 It composes and sends the email in one shot
 
@@ -252,26 +271,14 @@ It composes and sends the email in one shot
 
 =item bye
  
-Close the SMTP session
+Closes the SMTP session
 
 =back
 
 =head1 BUGS
 
 Please report any bugs or feature requests to C<bug-email-send-smtp-gmail at rt.cpan.org> or through the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Email-Send-SMTP-Gmail>.
-We will be notified, and then you'll automatically be notified of progress on your bug as we make changes.
-
-=head1 AUTHORS
-
-Martin Vukovic, C<< mvukovic at microbotica.es >>
-
-Juan Jose 'Peco' San Martin, C<< <peco at cpan.org> >>
-
-=head1 COPYRIGHT
-
-Copyright 2010 Microbotica
-
-This library is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
+You will automatically be notified of the progress on your bug as we make the changes.
 
 =head1 SUPPORT
 
@@ -300,6 +307,19 @@ L<http://cpanratings.perl.org/d/Email-Send-SMTP-Gmail>
 L<http://search.cpan.org/dist/Email-Send-SMTP-Gmail/>
 
 =back
+
+=head1 AUTHORS
+
+Martin Vukovic, C<< <mvukovic at microbotica.es> >>
+
+Juan Jose 'Peco' San Martin, C<< <peco at cpan.org> >>
+
+=head1 COPYRIGHT
+
+Copyright 2011 Microbotica
+
+This library is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
+
 
 =cut
 
