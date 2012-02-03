@@ -16,7 +16,7 @@ while(1){
    if($@)
    {
      print "Error from Twitter Server: $@\n";
-     print "Don't worry, we try to reconnect it\n";
+     print "Don't worry, we will try to reconnect soon\n";
    }
    else{
         print "Read if something...\n";
@@ -51,7 +51,7 @@ while(1){
                     }
                     else {warn "$@\n" if $@;}
                  }
-                 my $destroy=eval {$object->{twitter}->destroy_direct_message($status->{id})}; warn "@\n" if $@;
+                 # my $destroy=eval {$object->{twitter}->destroy_direct_message($status->{id})}; warn "@\n" if $@;
 
               }
               else {print "already read\n";}
@@ -60,5 +60,6 @@ while(1){
    }
 print "looping\n";
 sleep $object->{frequency};
+$object->ping();
 }
 
