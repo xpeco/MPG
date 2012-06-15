@@ -1,10 +1,10 @@
-package Email::Send::SMTP::Gmail;
+package Gmail;
 
 use strict;
 use warnings;
 use vars qw($VERSION);
 
-$VERSION='0.24';
+$VERSION='0.30';
 
 use Net::SMTP::SSL;
 use MIME::Base64;
@@ -16,20 +16,26 @@ sub new{
   my $self={@_};
   bless($self, $class);
   my %properties=@_;
-  $self->_initsmtp($properties{'-login'},$properties{'-pass'},$properties{'-debug'});
+  my $smtp='smtp.gmail.com'; # Default value
+  my $port=465; # Default value
+  $smtp=$properties{'-smtp'} if defined $properties{'-smtp'};
+  $port=$properties{'-port'} if defined $properties{'-port'};
+  $self->_initsmtp($smtp,$port,$properties{'-login'},$properties{'-pass'},$properties{'-debug'});
   $self->{from}=$properties{'-login'};
   return $self;
 }
 
 sub _initsmtp{
   my $self=shift;
+  my $smtp=shift;
+  my $port=shift;
   my $login=shift;
   my $pass=shift;
   my $debug=shift;
   # The module sets the SMTP google but could use another!
-  if (not $self->{sender} = Net::SMTP::SSL->new('smtp.gmail.com',
-                                 Port => 465,
-                                 Debug => $debug)) {die "Could not connect to SMTP server\n";
+print "$smtp: $port\n";
+  if (not $self->{sender} = Net::SMTP::SSL->new($smtp, Port => $port,
+                                                       Debug => $debug)) {die "Could not connect to SMTP server\n";
   }
   # Authenticate
   $self->{sender}->auth($login,$pass) || die "Authentication (SMTP) failed\n";
