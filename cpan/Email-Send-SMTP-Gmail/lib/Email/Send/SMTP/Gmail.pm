@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use vars qw($VERSION);
 
-$VERSION='0.30';
+$VERSION='0.32';
 
 use Net::SMTP::SSL;
 use MIME::Base64;
@@ -33,7 +33,6 @@ sub _initsmtp{
   my $pass=shift;
   my $debug=shift;
   # The module sets the SMTP google but could use another!
-print "$smtp: $port\n";
   if (not $self->{sender} = Net::SMTP::SSL->new($smtp, Port => $port,
                                                        Debug => $debug)) {die "Could not connect to SMTP server\n";
   }
@@ -229,7 +228,7 @@ __END__
 
 =head1 NAME
 
-Email::Send::SMTP::Gmail - Sends emails with attachments using Google's SMTP
+Email::Send::SMTP::Gmail - Sends emails with attachments using Google's SMTP (or any other SMTP server)
 
 =head1 SYNOPSIS
 
@@ -238,13 +237,13 @@ Email::Send::SMTP::Gmail - Sends emails with attachments using Google's SMTP
 
    use Email::Send::SMTP::Gmail;
 
-   my $mail=Email::Send::SMTP::Gmail->new( -smtp=>'gmail.com',
+   my $mail=Email::Send::SMTP::Gmail->new( -smtp=>'smtp.gmail.com',
                                            -login=>'whateveraddress@gmail.com',
                                            -pass=>'whatever_pass');
 
    $mail->send(-to=>'target@xxx.com',
                -subject=>'Hello!',
-               -charset=>'KOI8-R'
+               -charset=>'UTF-8'
                -verbose=>'1',
                -body=>'Just testing it',
                -attachments=>'full_path_to_file');
