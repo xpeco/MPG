@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use vars qw($VERSION);
 
-$VERSION='0.30';
+$VERSION='0.32';
 
 use Net::SMTP::SSL;
 use MIME::Base64;
@@ -110,6 +110,9 @@ sub send
   $mail->{charset}='UTF-8';
   $mail->{charset}=$properties{'-charset'} if defined $properties{'-charset'};
 
+  $mail->{contenttype}='text/plain';
+  $mail->{contenttype}=$properties{'-contenttype'} if defined $properties{'-contenttype'};
+
   $mail->{subject}='';
   $mail->{subject}=$properties{'-subject'} if defined $properties{'-subject'};
 
@@ -159,7 +162,7 @@ sub send
 
         # Send text body
         $self->{sender}->datasend("\n--$boundry\n");
-        $self->{sender}->datasend("Content-Type: text/plain; charset=".$mail->{charset}."\n");
+        $self->{sender}->datasend("Content-Type: ".$mail->{contenttype}."; charset=".$mail->{charset}."\n");
 
         $self->{sender}->datasend("\n");
         $self->{sender}->datasend($mail->{body} . "\n\n");
@@ -204,7 +207,7 @@ sub send
         print "With No attachments\n" if $verbose;
         # Send text body
         $self->{sender}->datasend("MIME-Version: 1.0\n");
-        $self->{sender}->datasend("Content-Type: text/plain; charset=".$mail->{charset}."\n");
+        $self->{sender}->datasend("Content-Type: ".$mail->{contenttype}."; charset=".$mail->{charset}."\n");
         $self->{sender}->datasend("\n");
         $self->{sender}->datasend($mail->{body} . "\n\n");
       }
@@ -247,6 +250,7 @@ Email::Send::SMTP::Gmail - Sends emails with attachments using Google's SMTP
                -charset=>'KOI8-R'
                -verbose=>'1',
                -body=>'Just testing it',
+               -contenttype => 'text/plain',
                -attachments=>'full_path_to_file');
 
    $mail->bye;
@@ -270,6 +274,8 @@ It composes and sends the email in one shot
 =over 6
 
 =item  to, cc, bcc: comma separated email addresses
+
+=item  contenttype: Content-Type for the body message. Examples are: text/plain (default), text/html, etc.
 
 =item attachments: comma separated files with full path
 
@@ -322,7 +328,7 @@ Juan Jose 'Peco' San Martin, C<< <peco at cpan.org> >>
 
 =head1 COPYRIGHT
 
-Copyright 2011 Microbotica
+Copyright 2012 Microbotica
 
 This library is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
 
