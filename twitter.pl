@@ -8,10 +8,11 @@ my $object=MPGTwitter->new(-debug=>1);
 
 while(1){
    my $statuses;
-   eval {
-#      my $statuses = $nt->direct_messages({ since_id => 1, count => 3 });
-      $statuses = $object->{twitter}->direct_messages(); # last 20
-   };
+#   eval {
+#      $statuses = $object->{twitter}->direct_messages(); # last 20
+#   };
+   $statuses = $object->{twitter}->direct_messages();
+
 
    if($@)
    {
@@ -41,12 +42,15 @@ while(1){
 
                  if ($data->{message}=~/$object->{action}->{trigger}/i)
                  {
-                    my $texto=$object->_action($data->{from});
-                    my $result= eval {$object->{twitter}->new_direct_message($data->{from},$texto)};
+                    my $m;
+                    $m->{text}=$object->_action($data->{from});
+                    $m->{screen_name}=$data->{from};
+
+                    my $result= eval {$object->{twitter}->new_direct_message($m)};
                     if ($@=~/Parece que ya has dicho eso/)
                     {
-                       $texto.=' (Cuidado, ya has pedido tu saldo hace un momento)';
-                       $result= eval {$object->{twitter}->new_direct_message($data->{from},$texto)};
+                       $m->{text}.=' (Cuidado, ya has pedido tu saldo hace un momento)';
+                       $result= eval {$object->{twitter}->new_direct_message($m)};
                        warn "$@\n" if $@;
                     }
                     else {warn "$@\n" if $@;}

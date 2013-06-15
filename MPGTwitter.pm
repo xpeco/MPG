@@ -4,9 +4,9 @@ use strict;
 use warnings;
 use vars qw($VERSION);
 
-$VERSION='0.1';
+$VERSION='0.2';
 
-use Net::Twitter::Lite;
+use Net::Twitter;
 use DBI;
 use XML::Simple;
 
@@ -88,13 +88,14 @@ sub _inittwitter{
        $self->{lastid}=$records->[0]->{LastID}; 
        $self->{idreg}=$records->[0]->{Id}; 
        print "Connecting to Twitter Server\n";
-       $self->{twitter} = Net::Twitter::Lite->new(
+       $self->{twitter} = Net::Twitter->new(
                        consumer_key => $records->[0]->{consumer_key},
                        consumer_secret => $records->[0]->{consumer_secret},
                        access_token => $records->[0]->{access_token},
-                       access_token_secret => $records->[0]->{access_token_secret}
-		 );
-	if($@){print "Error: $@\n";}
+                       access_token_secret => $records->[0]->{access_token_secret},
+                       traits   => [qw/API::RESTv1_1/],
+        );
+        if($@){print "Error: $@\n";}
 }
 
 sub updateLastId{
