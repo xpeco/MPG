@@ -8,11 +8,7 @@ my $object=MPGTwitter->new(-debug=>1);
 
 while(1){
    my $statuses;
-#   eval {
-#      $statuses = $object->{twitter}->direct_messages(); # last 20
-#   };
-   $statuses = $object->{twitter}->direct_messages();
-
+   eval { $statuses = $object->{twitter}->direct_messages(); };
 
    if($@)
    {

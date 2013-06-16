@@ -1,9 +1,0 @@
-Revision history for Email-Send-SMTP-Gmail
-
-0.30    2012/06/12
-        Improvements: use this module with other SMTP servers than Google
-0.24    2012/02/02
-        Fixbugs and improvements: RT 71864 and 74625
-0.01    Date/time
-        First version, released on an unsuspecting world.
-
