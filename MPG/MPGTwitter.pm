@@ -94,6 +94,7 @@ sub _inittwitter{
                        access_token => $records->[0]->{access_token},
                        access_token_secret => $records->[0]->{access_token_secret},
                        traits   => [qw/API::RESTv1_1/],
+                       ssl => 1,
         );
         if($@){print "Error: $@\n";}
 }
