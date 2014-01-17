@@ -23,7 +23,7 @@ sub new{
 sub _initxml{
        my $self=shift;
        $self->{xml}=XMLin('./config.xml');
-		 return;
+       return;
 }
 
 sub _initdb{
@@ -31,18 +31,21 @@ sub _initdb{
        $self->{db}=DBI->connect("DBI:mysql:$self->{xml}->{database}:$self->{xml}->{host}",
        $self->{xml}->{user},
        $self->{xml}->{password});
-       
+
        if (not $self->{db}){
          print STDERR "Connection to DB failed :-( ...\n";
-	 my $error=1;
+         my $error=1;
          while($error){
-	  print "Do not worry, trying to reconnect to DB on _initdb\n";
+          print "Do not worry, trying to reconnect to DB on _initdb\n";
           sleep 5;
           $self->{db}=DBI->connect("DBI:mysql:$self->{xml}->{database}:$self->{xml}->{host}",
           $self->{xml}->{user},
           $self->{xml}->{password});
           if (defined $self->{db}){$error=0;print "Fixed\n";}
          }
+       }
+       else{
+           print "Connected to Comway\n";
        }
 }
 
@@ -59,9 +62,9 @@ sub _initdbaction{
 
        if (not $self->{dbaction}){
          print STDERR "Connection to DB TwitterAction failed :-(\n";
-	 my $error=1;
+         my $error=1;
          while($error){
-	  print "Do not worry, trying to reconnect to DB\n";
+          print "Do not worry, trying to reconnect to DB\n";
           sleep 5;
           $self->{dbaction}=DBI->connect("DBI:mysql:$records->[0]->{SQL_Table}:$records->[0]->{SQL_Host}",$records->[0]->{SQL_User},$records->[0]->{SQL_Pass});
           $self->{action}->{query}=$records->[0]->{SQL_Query};
@@ -70,6 +73,9 @@ sub _initdbaction{
           $self->{action}->{trigger}=$records->[0]->{Trigger};
           if ($self->{dbaction}){$error=0;}
          }
+       }
+       else{
+           print "TwitterAction read\n";
        }
 }
 
@@ -97,6 +103,7 @@ sub _inittwitter{
                        ssl => 1,
         );
         if($@){print "Error: $@\n";}
+        print "Done\n";
 }
 
 sub updateLastId{
