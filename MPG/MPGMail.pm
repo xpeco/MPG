@@ -98,14 +98,14 @@ sub loop{
    $verbose=$properties{'-verbose'} if defined $properties{'-verbose'};
    print "Looking for emails on MPG\n" if $verbose;
    while(1){
-     my $do=$self->{db}->prepare("select * from `Email_OUT` where Sent<>'Y' and Retry<'10' and Mount='Y' and ClusterId=\'$self->{xml}->{cluster}\' order by Id asc limit 10");
+     my $do=$self->{db}->prepare("select * from `Email_OUT` where sent<>'Y' and retry<'10' and mount='Y' and clusterid=\'$self->{xml}->{cluster}\' order by id asc limit 10");
      if (!$do->execute) { $self->_initdb }
      
      if ($do->rows > 0){
         print "Connecting to SMTP server\n" if $verbose;
         $self->_initsmtp;
         while(my $record=$do->fetchrow_hashref()){
-             print "Pending email found (Id: $record->{Id})\n" if $verbose;
+             print "Pending email found (Id: $record->{id})\n" if $verbose;
              $self->send(-email=>$record,-verbose=>$verbose);
              print "Sleeping between emails ($self->{frequency})\n";
              sleep $self->{frequency};
@@ -157,23 +157,23 @@ sub send
 
    $mail->{Retry}++;
 
-   my $do=$self->{db}->prepare("select * from `Email_ATTACHMENTS` where Header=\'$mail->{Id}\'");
+   my $do=$self->{db}->prepare("select * from `Email_ATTACHMENTS` where header=\'$mail->{id}\'");
    $do->execute;
    
    my $error_attach='NO';
    my @attachments;
    while(my $attach=$do->fetchrow_hashref()){
-       print "Adding attach:$attach->{Path}\n" if $verbose;
-       push(@attachments,$attach->{Path});
-       unless (-f $attach->{Path}) {
-           print "Unable to find attachment file $attach->{Path}\n" if $verbose;
-           $error_attach="Unable to find attachment file $attach->{Path}";
+       print "Adding attach:$attach->{path}\n" if $verbose;
+       push(@attachments,$attach->{path});
+       unless (-f $attach->{path}) {
+           print "Unable to find attachment file $attach->{path}\n" if $verbose;
+           $error_attach="Unable to find attachment file $attach->{path}";
            next;
          }
-         my $opened=open(FH, "$attach->{Path}");
+         my $opened=open(FH, "$attach->{path}");
          if( not $opened){
            print "Unable to open attachment file $attach\n" if $verbose;
-           $error_attach="Unable to open attachment file $attach->{Path}";
+           $error_attach="Unable to open attachment file $attach->{path}";
          }
    }
 
@@ -182,17 +182,17 @@ sub send
     eval{
       my $boundry=_createboundry();
 
-      $self->{sender}->mail($mail->{From}. "\n");
+      $self->{sender}->mail($mail->{from}. "\n");
 
-      my @recepients = split(/,/, $mail->{To});
+      my @recepients = split(/,/, $mail->{to});
       foreach my $recp (@recepients) {
           $self->{sender}->to($recp . "\n");
       }
-      my @ccrecepients = split(/,/, $mail->{Cc});
+      my @ccrecepients = split(/,/, $mail->{cc});
       foreach my $recp (@ccrecepients) {
           $self->{sender}->cc($recp . "\n");
       }
-      my @bccrecepients = split(/,/, $mail->{Bcc});
+      my @bccrecepients = split(/,/, $mail->{bcc});
       foreach my $recp (@bccrecepients) {
           $self->{sender}->bcc($recp . "\n");
       }
@@ -200,11 +200,11 @@ sub send
       $self->{sender}->data();
 
       #Send header
-      $self->{sender}->datasend("From: " . $mail->{From} . "\n");
-      $self->{sender}->datasend("To: " . $mail->{To} . "\n");
-      $self->{sender}->datasend("Cc: " . $mail->{Cc} . "\n") if $mail->{Cc} ne '';
-      $self->{sender}->datasend("Reply-To: " . $mail->{Replyto} . "\n");
-      $self->{sender}->datasend("Subject: " . $mail->{Subject} . "\n");
+      $self->{sender}->datasend("From: " . $mail->{from} . "\n");
+      $self->{sender}->datasend("To: " . $mail->{to} . "\n");
+      $self->{sender}->datasend("Cc: " . $mail->{cc} . "\n") if $mail->{Cc} ne '';
+      $self->{sender}->datasend("Reply-To: " . $mail->{replyto} . "\n");
+      $self->{sender}->datasend("Subject: " . $mail->{subject} . "\n");
 
       if(@attachments!=0)
       {
@@ -216,7 +216,7 @@ sub send
         $self->{sender}->datasend("\n--$boundry\n");
         $self->{sender}->datasend("Content-Type: text/plain\n");
         $self->{sender}->datasend("\n");
-        $self->{sender}->datasend($mail->{Body} . "\n\n");
+        $self->{sender}->datasend($mail->{body} . "\n\n");
         foreach my $attach(@attachments)
         {
            my($bytesread, $buffer, $data, $total);
@@ -254,7 +254,7 @@ sub send
         $self->{sender}->datasend("MIME-Version: 1.0\n");
         $self->{sender}->datasend("Content-Type: text/plain\n");
         $self->{sender}->datasend("\n");
-        $self->{sender}->datasend($mail->{Body} . "\n\n");
+        $self->{sender}->datasend($mail->{body} . "\n\n");
       }
    
       $self->{sender}->datasend("\n");
@@ -265,19 +265,19 @@ sub send
 
     if($@){
        print "Warning, updating the email record\n" if $verbose; 
-       $do=$self->{db}->prepare("update `Email_OUT` set Retry=\'$mail->{Retry}\', Status=\'$@\', Time=CURTIME(), Date=CURDATE() where Id=\'$mail->{Id}\'");
+       $do=$self->{db}->prepare("update `Email_OUT` set retry=\'$mail->{retry}\', status=\'$@\', time=CURTIME(), date=CURDATE() where id=\'$mail->{id}\'");
        $do->execute;
     }
     else
     {
        print "Mail sent!\n" if $verbose;
-       $do=$self->{db}->prepare("update `Email_OUT` set Sent=\'Y\', Status=\'OK\', Time=CURTIME(), Date=CURDATE() where Id=\'$mail->{Id}\'");
+       $do=$self->{db}->prepare("update `Email_OUT` set sent=\'Y\', status=\'OK\', time=CURTIME(), date=CURDATE() where id=\'$mail->{id}\'");
        $do->execute;
     }
   }
   else{
        print "Updating the email record with Attachment errors\n" if $verbose; 
-       $do=$self->{db}->prepare("update `Email_OUT` set Retry=\'$mail->{Retry}\', Status=\'$error_attach\', Time=CURTIME(), Date=CURDATE() where Id=\'$mail->{Id}\'");
+       $do=$self->{db}->prepare("update `Email_OUT` set retry=\'$mail->{retry}\', status=\'$error_attach\', time=CURTIME(), date=CURDATE() where id=\'$mail->{id}\'");
        $do->execute;
   }
 

@@ -41,13 +41,13 @@ DROP TABLE IF EXISTS `Email_ATTACHMENTS`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `Email_ATTACHMENTS` (
-  `Id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `Path` varchar(250) NOT NULL,
-  `Header` bigint(20) NOT NULL,
-  `AttDate` date NOT NULL,
-  PRIMARY KEY (`Id`),
-  KEY `Header` (`Header`),
-  CONSTRAINT `Header` FOREIGN KEY (`Header`) REFERENCES `Email_OUT` (`Id`) ON DELETE CASCADE ON UPDATE CASCADE
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `path` varchar(250) NOT NULL,
+  `header` bigint(20) NOT NULL,
+  `attdate` date NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `header` (`header`),
+  CONSTRAINT `header` FOREIGN KEY (`header`) REFERENCES `Email_OUT` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=5864 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -59,25 +59,25 @@ DROP TABLE IF EXISTS `Email_OUT`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `Email_OUT` (
-  `Id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `From` varchar(50) CHARACTER SET latin1 NOT NULL,
-  `Subject` varchar(250) CHARACTER SET latin1 NOT NULL,
-  `To` varchar(250) CHARACTER SET latin1 NOT NULL,
-  `Cc` varchar(250) CHARACTER SET latin1 NOT NULL,
-  `Bcc` varchar(250) CHARACTER SET latin1 NOT NULL,
-  `Priority` enum('1','2','3','4','5') CHARACTER SET latin1 NOT NULL DEFAULT '3',
-  `Body` text CHARACTER SET latin1 NOT NULL,
-  `Date` date NOT NULL,
-  `Retry` int(11) NOT NULL,
-  `Status` char(250) CHARACTER SET latin1 NOT NULL,
-  `Mount` enum('Y','N') CHARACTER SET latin1 NOT NULL DEFAULT 'N',
-  `ClusterId` varchar(10) NOT NULL,
-  `Time` time NOT NULL,
-  `Sent` enum('Y','N') NOT NULL DEFAULT 'N',
-  `Zip` enum('Y','N') NOT NULL DEFAULT 'N',
-  `Created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `Replyto` varchar(259) NOT NULL,
-  `Class` varchar(250) NOT NULL DEFAULT 'NONE',
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `from` varchar(50) CHARACTER SET latin1 NOT NULL,
+  `subject` varchar(250) CHARACTER SET latin1 NOT NULL,
+  `to` varchar(250) CHARACTER SET latin1 NOT NULL,
+  `cc` varchar(250) CHARACTER SET latin1 NOT NULL,
+  `bcc` varchar(250) CHARACTER SET latin1 NOT NULL,
+  `priority` enum('1','2','3','4','5') CHARACTER SET latin1 NOT NULL DEFAULT '3',
+  `body` text CHARACTER SET latin1 NOT NULL,
+  `date` date NOT NULL,
+  `retry` int(11) NOT NULL,
+  `status` char(250) CHARACTER SET latin1 NOT NULL,
+  `mount` enum('Y','N') CHARACTER SET latin1 NOT NULL DEFAULT 'N',
+  `clusterid` varchar(10) NOT NULL,
+  `time` time NOT NULL,
+  `sent` enum('Y','N') NOT NULL DEFAULT 'N',
+  `zip` enum('Y','N') NOT NULL DEFAULT 'N',
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `replyto` varchar(259) NOT NULL,
+  `class` varchar(250) NOT NULL DEFAULT 'NONE',
   PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6213 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
