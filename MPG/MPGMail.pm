@@ -42,7 +42,7 @@ sub _initdb{
        $self->{db}=DBI->connect("DBI:mysql:$self->{xml}->{database}:$self->{xml}->{host}",
        $self->{xml}->{user},
        $self->{xml}->{password});
-       
+
        # Never dies....
        if (not $self->{db}){
          print STDERR "Connection to DB failed :-(\n";
@@ -115,12 +115,12 @@ sub loop{
      }
      print "Waiting for emails on MPG\n" if $verbose;
      sleep 3;
-     
+
      if (not $self->{db}) {
          print "";
          $self->_initdb;
      }
-         
+
    }
 }
 sub _createboundry
@@ -152,14 +152,15 @@ sub send
    else
    {
      print "Error at 'send', the -email parameter is mandatory!\n";
-     exit;
+     return;
+     #exit;
    }
 
    $mail->{Retry}++;
 
    my $do=$self->{db}->prepare("select * from `Email_ATTACHMENTS` where header=\'$mail->{id}\'");
    $do->execute;
-   
+
    my $error_attach='NO';
    my @attachments;
    while(my $attach=$do->fetchrow_hashref()){
@@ -196,7 +197,7 @@ sub send
       foreach my $recp (@bccrecepients) {
           $self->{sender}->bcc($recp . "\n");
       }
-      
+
       $self->{sender}->data();
 
       #Send header
@@ -256,7 +257,7 @@ sub send
         $self->{sender}->datasend("\n");
         $self->{sender}->datasend($mail->{body} . "\n\n");
       }
-   
+
       $self->{sender}->datasend("\n");
       $self->{sender}->dataend();
       print "Sending email\n" if $verbose;
@@ -265,7 +266,7 @@ sub send
 
     if($@){
        print "Warning, updating the email record\n" if $verbose; 
-       $do=$self->{db}->prepare("update `Email_OUT` set retry=\'$mail->{retry}\', status=\'$@\', time=CURTIME(), date=CURDATE() where id=\'$mail->{id}\'");
+       $do=$self->{db}->prepare("update `Email_OUT` set retry=\'$mail->{retry}\', status=\'$@\', mount='N', time=CURTIME(), date=CURDATE() where id=\'$mail->{id}\'");
        $do->execute;
     }
     else
@@ -277,7 +278,7 @@ sub send
   }
   else{
        print "Updating the email record with Attachment errors\n" if $verbose; 
-       $do=$self->{db}->prepare("update `Email_OUT` set retry=\'$mail->{retry}\', status=\'$error_attach\', time=CURTIME(), date=CURDATE() where id=\'$mail->{id}\'");
+       $do=$self->{db}->prepare("update `Email_OUT` set retry=\'$mail->{retry}\', status=\'$error_attach\', mount='N', time=CURTIME(), date=CURDATE() where id=\'$mail->{id}\'");
        $do->execute;
   }
 
