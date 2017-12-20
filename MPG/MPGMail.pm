@@ -109,14 +109,16 @@ sub loop{
    my $verbose=0;
    $verbose=$properties{'-verbose'} if defined $properties{'-verbose'};
    print "Looking for emails on MPG\n" if $verbose;
+   my $tempfrom=''; # store the latest from
    while(1){
       # Let's count the number of messages already sent with the default account
-      $self->_initsmtpconfig;
+      $self->_initsmtpconfig(); # read config from DB
+      $self->{authid}=$tempfrom if ($tempfrom ne ''); # retore latest from used
       my $do;
-      $do=$self->{db}->prepare("select count(*) as ALREADY_SENT from `Email_OUT` where sent='Y' and `from`=\'$self->{authid}\' and date=CURRENT_DATE() and clusterid=\'$self->{xml}->{cluster}\' order by id asc limit 10");
+      $do=$self->{db}->prepare("select count(*) as ALREADY_SENT from `Email_OUT` where sent='Y' and `from`=\'$self->{authid}\' and date=CURRENT_DATE() and clusterid=\'$self->{xml}->{cluster}\' order by id asc");
       if (!$do->execute) { 
          $self->_initdb;
-         $do=$self->{db}->prepare("select count(*) as ALREADY_SENT from `Email_OUT` where sent='Y' and `from`=\'$self->{authid}\' and date=CURRENT_DATE() and clusterid=\'$self->{xml}->{cluster}\' order by id asc limit 10");
+         $do=$self->{db}->prepare("select count(*) as ALREADY_SENT from `Email_OUT` where sent='Y' and `from`=\'$self->{authid}\' and date=CURRENT_DATE() and clusterid=\'$self->{xml}->{cluster}\' order by id asc");
       }
       my $cuenta=$do->fetchrow_hashref();
       my $acumulate=$cuenta->{ALREADY_SENT} // 0;
@@ -124,6 +126,7 @@ sub loop{
       my $acc_index=int($acumulate/450);
       $acc_index='' if $acc_index<1;
       $self->{authid}=~s/\@/$acc_index\@/;
+      $tempfrom=$self->{authid};
       print "Cuenta de origen: $self->{authid}\n";
       
      $do=$self->{db}->prepare("select * from `Email_OUT` where sent<>'Y' and retry<'10' and mount='Y' and clusterid=\'$self->{xml}->{cluster}\' order by id asc limit 10");
